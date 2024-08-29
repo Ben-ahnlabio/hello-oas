@@ -1,0 +1,564 @@
+openapi: 3.0.3
+info:
+  version: 0.1.0.dev
+  title: WaaS API
+  description: |-
+
+    ABC Wallet as a Service는 MPC 지갑 개발과 블록체인 네트워크 통신에 대한 REST API를 제공하며 연동에 필요한 SDK와 문서를 제공하고 있습니다.
+
+    서비스 이용을 위해서는 관리자가 생성한 프로젝트의 유효한 Client ID와 Client Secret을 통해 발급 받은 Access token을 필요로 합니다. 
+
+    Access token 발급을 위한 Client ID와 Client Secret 생성 방법은 [연동가이드](https://docs.waas.myabcwallet.com/en/getting-started/guide/#_7)를 참조바랍니다.
+
+  termsOfService: https://api.id.myabcwallet.com/query/v2/terms?service=waas-admin&language=ko
+
+  contact:
+    email: help@myabcwallet.com
+    name: help@myabcwallet.com
+
+externalDocs:
+  url: https://docs.waas.myabcwallet.com/ko/
+
+servers:
+  - url: https://dev-api.waas.myabcwallet.com/
+  - url: https://api.waas.myabcwallet.com/
+
+tags:
+  - name: Auth
+    description: Auth
+  - name: Member
+    description: Member
+paths:
+  /auth/secure/channel/create:
+    post:
+      tags:
+        - Auth
+      summary: 보안 채널 생성
+      description: |-
+
+        일부 API는 통신 구간 데이터 보호를 위해 보안 채널을 생성하여 암호화 대상들에 대한 암호화 통신을 요구합니다.
+
+        성공 시 응답메시지에 요청에 사용된 평문의 암호문과 생성된 Secure-Channel ID를 반환합니다.
+
+        WaaS 서버 측 ECPublicKey (비 압축) 와 클라이언트의 ECPrivateKey 를 ECDH (secp256r1) 연산을 통해 32바이트의 shared secret 을 생성할 수 있습니다.
+
+        secret 32바이트 중 앞의 16바이트는 key, 뒤의 16바이트는 iv 로 AES 복호화를 수행합니다.
+        (AES/CBC/PKCS7Padding 사용)
+
+        복호화 결과가 요청 시 보낸 평문과 일치하다면 채널이 정상적으로 생성된 것 입니다.
+      operationId: createSecureChannel
+      requestBody:
+        description: 보안 채널 생성
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CreateSecureChannelRequestBody"
+      responses:
+        "200":
+          description: |-
+
+            Response Body Fields
+
+            - `channelid` : 요청에 사용될 Secure-Channel의 ID이며, HTTP Request Header에 포함될 Secure-Channel의 값으로 사용됩니다.
+            - `publickey` : 서버 측 ECPublicKey이며, Client의 ECPublicKey와 함께 ECDH(secp256r1) 연산을 수행해 32 byte의 shared secret을 생성할 수 있습니다.
+            - `encrypted` : 보안채널 생성에 사용된 plain text의 암호화된 결과값이며, 복호화 결과가 요청에 사용된 plain text와 동일하다면 정상적으로 Secure-Channel 생성이 이루어졌음을 의미합니다.
+
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSecureChannelResponseBody"
+
+  /auth/auth-service/v2/login:
+    post:
+      tags:
+        - Auth
+      summary: 이메일 로그인
+      operationId: emailLogin
+      security:
+        - BasicAuth: []
+        - ApiKeyAuth: []
+      description: |-
+
+        [iPhone, iPod, iPad, Android] 이 외는 웹으로 처리되며 인증 토큰의 유효시간이 달라집니다.
+
+        - Web: accessToken 10분 / refreshToken 60분
+        - Mobile: accessToken 1일 / refreshToken 6일
+
+      requestBody:
+        description: 이메일 로그인 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/LoginRequestBody"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponseBody"
+
+        "400":
+          description: Invalid status value
+
+  /auth/auth-service/v2/{social-network-name}/login:
+    get:
+      tags:
+        - Auth
+      summary: 소셜 로그인
+      operationId: socialLogin
+      description: |-
+
+        ### Apple Login
+
+        애플로그인은 사용자가 로그인 이메일 숨김(Private email relay) 여부를 결정합니다. 
+
+        사용자가 Private email relay 를 사용할 경우 애플이 생성하는 랜덤 이메일 주소를 기준으로 토큰이 생성됩니다. 
+
+        따라서 기존에 가입된 사용자의 경우라도 이메일 숨김 설정에 의해서 신규 가입으로 처리될 수 있다는 알림을 보여주어야 할 필요가 있습니다.
+
+      parameters:
+        - name: social-network-name
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - apple
+              - google
+              - line
+              - naver
+              - kakao
+          description: 소셜 네트워크 이름
+
+        - name: audience
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 수신자 (서비스 ID)
+
+        - name: url
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 클라이언트가 아닌 서버에서 연동 시 토큰을 받고자 하는 최종 주소를 입력합니다. GET 파라미터로 id가 발급됩니다.
+
+      responses:
+        "302":
+          description: |-
+
+            리다이렉트하기 위한 302 Found를 반환합니다. 
+
+            리다이렉트 URL은 사전에 등록되어 있는 클라이언트 ID와 Callback URL 등의 정보들이 포함되어 있습니다.
+
+            응답으로 받은 주소는 웹 브라우저 또는 모바일 앱의 웹뷰에서 해당 주소로 이동시켜야 하며, 이동 후에는 Google 로그인 연동 화면 계정 선택 창이 보여집니다.
+
+          headers:
+            Location:
+              schema:
+                type: string
+                example: "https://accounts.google.com/o/oauth2/v2/auth?client_id=983602811377-eip0deuhu3o5hdiao4ng1or4dmopu9ad.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/auth-service/google/callback&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email&prompt=consent&access_type=offline"
+                description: Callback URL
+
+        "200":
+          description: |-
+
+            로그인 화면의 안내에 따라 로그인을 수행하면 요청 시 URL 입력 여부에 따라 결과 값이 달라집니다.
+
+            #### [URL 입력한 경우]
+            입력된 URL로 302 Redirect 됩니다. 서버 연동 시 생성된 토큰 발급을 참조하여 해당 요청을 수행하면 JWT 인증 토큰을 받게 됩니다.
+
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponseBody"
+              examples:
+                without_url:
+                  summary: URL 입력하지 않은 경우
+                  value:
+                    access_token: 2YotnFZFEjr1zCsicMWpAA
+                    token_type: bearer
+                    expires_in: 3600
+                    refresh_token: tGzv3JOkF0XG5Qx2TlKWIA
+
+      security:
+        - BasicAuth: []
+
+  /auth/auth-service/v2/finalize:
+    get:
+      tags:
+        - Auth
+      summary: 서버에서 연동 시 생성된 토큰 발급 받는 방법
+      operationId: finalizeLogin
+      security:
+        - BasicAuth: []
+
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: SNS 인증 연동에서 URL 입력 후 최종 주소에서 반환 받은 id 값
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinalizeLoginResponseBody"
+
+  /auth/auth-service/v2/token/login:
+    get:
+      tags:
+        - Auth
+      summary: SNS 인증 토큰으로 로그인
+      operationId: tokenLogin
+      security:
+        - BasicAuth: []
+
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: OIDC(google, apple, kakao, line)의 id token 또는 OAuth(naver) 의 access token
+
+        - name: service
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - apple
+              - google
+              - line
+              - naver
+              - kakao
+          description: SNS 종류 [google, apple, naver, kakao, line]
+
+        - name: audience
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 수신자 (서비스 ID)
+      responses:
+        "200":
+          description: |-
+
+            SNS 로그인 연동 시 콜백 API 에서 발생되는 에러코드 618 은 OAuth 연동에 성공했지만, 해당 계정은 최초 연동으로 존재하지 않는 계정이므로 신규 가입 처리가 필요합니다.
+
+            응답 메시지는 JSON 형태로 이메일 주소와 6자리 인증코드, 유효시간(1시간)이 있으므로 약관 동의를 받고 회원 서버로 신규 가입 처리를 하면 됩니다.
+
+            회원 가입 처리가 완료되면 해당 이메일과 생성된 비밀번호로 로그인 하여 JWT 를 받고 서비스를 이용할 수 있도록 합니다.
+
+            SNS 인증 토큰으로 회원 가입 시 비밀번호 암호화 처리가 필요 없습니다.
+
+            회원 가입시 비밀번호는 랜덤 생성되며, 추후 ABC Wallet 으로 로그인 시 비밀번호 설정이 진행됩니다.
+
+          content:
+            application/json:
+              examples:
+                token_login_success:
+                  summary: 정상적으로 로그인이 완료된 경우
+                  value:
+                    id_token: "eyJraWQiOiI4IiwidHlwIjoiSldUIiwiYWxnIjoiRVMy"
+                    access_token: "2YotnFZFEjr1zCsicMWpAA"
+                    token_type: Bearer
+                    expires_in: 3600
+                    refresh_token: "tGzv3JOkF0XG5Qx2TlKWIA"
+                signup_required:
+                  summary: 신규 가입 처리 필요
+                  value:
+                    code: 618
+                    msg: '{"email":"james@ahnlab.com","sixcode":"184149","timeout":3600, "token":"eyJraWQiOiI4OCIsInR5cCI6IkpXVCIsImFsZyI6IkVTMjU2In0.eyJzdWIiOiIwOWEyZDQyMjg0NTI0Y2E0YjcxODQ0MzhkZWRlYmVlNyIsImF1ZCI6Imh0dHBzOi8vbXcubXlhYmN3YWxsZXQuY29tIiwiaXNzIjoiaHR0cHM6Ly9hcGkuaWQubXlhYmN3YWxsZXQuY29tLzU4NTYxZGU4YjNjY2YzMTFjNWUwYzAzNjEyZjM3MGVkIiwiZXhwIjoxNjcxMjU3ODIyLCJpYXQiOjE2NzA5MTIyMjIsImp0aSI6ImFmOGRiYmY2NTE1NzQzNGI4YTdiOTI5ZTRhMjIyOWMwIn0.OsCOSE3USlcjFEYzeV781UfmfIEIGkNwkLtXF4lcV8nJVuCQAycqGnqH3klquoIPbTzLYrez8Z6GhchOW09gLg"}'
+                    timeout: 0
+  /auth/auth-service/v2/refresh:
+    post:
+      tags:
+        - Auth
+      summary: 인증 토큰 갱신
+      operationId: refreshToken
+      security:
+        - BasicAuth: []
+      description: |-
+
+        [iPhone, iPod, iPad, Android] 이 외는 웹으로 처리되며 인증 토큰의 유효시간이 달라집니다.
+
+        - Web: accessToken 10분 / refreshToken 60분
+        - Mobile: accessToken 1일 / refreshToken 6일
+
+      requestBody:
+        description: 인증 토큰 갱신 정보 요청
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponseBody"
+
+  /jwk/key-service/{userPoolId}/.well-known/jwks.json:
+    get:
+      tags:
+        - Auth
+      summary: 검증 키 가져오기
+      operationId: jwks
+
+      parameters:
+        - name: userPoolId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: JWT issuer의 URI
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              examples:
+                jwks:
+                  summary: JWKs
+                  value:
+                    keys:
+                      - kty: EC
+                        use: sig
+                        kid: 0
+                        x: uIj6dpQPOzAdaaqyncuSXU8F3PZrKhv0Z5m1eD6GlGI
+                        y: okpb7asDFT2GjaBjEZa-49bLsXHF8jpow4FLntm0idU
+
+  /member/mail-service/{email}/sendcode:
+    get:
+      tags:
+        - Member
+      summary: 이메일 인증 코드 발송
+      operationId: memberSendCode
+      description: |-
+
+        Email Template 종류 
+
+        - `verify` : 사용자 가입(default) 
+        - `changepassword` : 비밀번호 변경 
+        - `initpassword` `: 비밀번호 초기화
+
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 사용자 이메일
+
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+          description: "언어 설정[ko, en, ja] (default: en)"
+
+        - name: template
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - verify
+              - changepassword
+              - initpassword
+          description: "Email Template 종류(default: verify)"
+
+      responses:
+        "200":
+          description: 성공 (empty response)
+
+  /member/mail-service/{email}/verifycode:
+    post:
+      tags:
+        - Member
+      summary: 이메일 인증 코드 검증
+      operationId: memberVerifyCode
+      description: |-
+
+        Email Template 종류 
+
+        - `verify` : 사용자 가입(default) 
+        - `changepassword` : 비밀번호 변경 
+        - `initpassword` : 비밀번호 초기화
+
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 사용자 이메일
+
+      requestBody:
+        description: 이메일 인증 코드 확인
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: "123456"
+                serviceid:
+                  type: string
+                  example: "https://mw.myabcwallet.com"
+
+      responses:
+        "200":
+          description: 성공 (empty response)
+
+components:
+  schemas:
+    CreateSecureChannelRequestBody:
+      required:
+        - pubkey
+        - plain
+      type: object
+      properties:
+        pubkey:
+          type: string
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+        plain:
+          type: string
+          example: test
+
+    CreateSecureChannelResponseBody:
+      type: object
+      properties:
+        channelid:
+          type: string
+          example: "2e05fdf0b2e240aba81ec46f494e792f"
+        publickey:
+          type: string
+          example: "04f2c7f6b36e7165c26aa6ee0eb3dd4f136c6ddb9a7c14fb83f66da07353ff2625dd0414bcc253f491eb8b5dc21beb630fe1853874f2e4463d5a8ca9762d71af5b"
+        encrypted:
+          type: string
+          example: "dg1LZUUwWbu2Lw7i6db4Cw=="
+
+    LoginRequestBody:
+      required:
+        - grant_type
+        - username
+        - password
+        - audience
+      type: object
+      properties:
+        grant_type:
+          type: string
+          example: password
+        username:
+          type: string
+          example: johndoe
+        password:
+          type: string
+          example: password
+        audience:
+          type: string
+          example: https://mw.myabcwallet.com
+        tokentype:
+          type: string
+          example: Bearer
+
+    RefreshTokenRequestBody:
+      required:
+        - grant_type
+        - refresh_token
+      type: object
+      properties:
+        grant_type:
+          type: string
+          example: refresh_token
+        refresh_token:
+          type: string
+          example: tGzv3JOkF0XG5Qx2TlKWIA
+
+    LoginResponseBody:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "2YotnFZFEjr1zCsicMWpAA"
+        refresh_token:
+          type: string
+          example: "tGzv3JOkF0XG5Qx2TlKWIA"
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+
+    SocialLoginResponseHeader:
+      type: object
+      properties:
+        Location:
+          type: string
+          example: "https://accounts.google.com/o/oauth2/v2/auth?client_id=983602811377-eip0deuhu3o5hdiao4ng1or4dmopu9ad.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/auth-service/google/callback&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email&prompt=consent&access_type=offline"
+
+    FinalizeLoginResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ca10db3a-1234-5678-90ab-52c4a627162b
+        email:
+          type: string
+          example: abc@myabcwallet.com
+        access_token:
+          type: string
+          example: "2YotnFZFEjr1zCsicMWpAA"
+        refresh_token:
+          type: string
+          example: "tGzv3JOkF0XG5Qx2TlKWIA"
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+
+    TokenLoginResponseBody:
+      type: object
+      properties:
+        id_token:
+          type: string
+          example: "eyJraWQiOiI4IiwidHlwIjoiSldUIiwiYWxnIjoiRVMy"
+        access_token:
+          type: string
+          example: "2YotnFZFEjr1zCsicMWpAA"
+        refresh_token:
+          type: string
+          example: "tGzv3JOkF0XG5Qx2TlKWIA"
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Secure-Channel
+
+    BasicAuth:
+      type: http
+      scheme: basic
+
+x-original-swagger-version: "2.0"
