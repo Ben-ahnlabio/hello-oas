@@ -41,3 +41,29 @@ URL 이 너무 복잡함. 사용자 입장에서 .well-known/jwks.json 이후의
 response 값 의미 불명료.
 
 성공이라면 별다른 response 가 필요없음 큰 json 값을 사용자가 받아야 하는지?
+
+#### GET /member/user-management/users/{email}/login
+
+empty response 에 대한 설명
+
+#### POST /member/user-management/users/{email}
+
+설명 부족
+
+#### POST /member/user-management/v2/join
+
+설명 부족
+
+socialtype 에 google apple 말고 다른것?
+
+#### PUT /member/user-management/users/ext/update
+
+join 할때 username 이 update 할때는 userid?
+
+어떤 상황에서 사용되는지 설명이 있으면 좋을것 같습니다.
+
+키 발급 여부를 수정한다?
+
+사용자 지갑 주소를 수정한다?
+
+회원정보 추가 업데이트는 인증 불필요?
