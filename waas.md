@@ -2,6 +2,12 @@
 
 ## Issues
 
+### 예제코드
+
+https://docs.waas.myabcwallet.com/ko/getting-started/guide/secure-channel/#encryptdecrypt-secret-data
+
+python code indent 안맞음
+
 ### GET /uath/secure/channel/create
 
 GET 에는 request body 가 들어갈 수 없음
@@ -67,3 +73,13 @@ join 할때 username 이 update 할때는 userid?
 사용자 지갑 주소를 수정한다?
 
 회원정보 추가 업데이트는 인증 불필요?
+
+#### GET /wapi/v2/mpc/wallets/info
+
+| Field                   | Type     | Description                                                                                                    |
+| :---------------------- | :------- | :------------------------------------------------------------------------------------------------------------- |
+| `uid`                   | `string` | 사용자 uid                                                                                                     |
+| `wid`                   | `number` | 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.                                                        |
+| `sid`                   | `string` | 지갑 주소                                                                                                      |
+| `pvencstr`              | `string` | 암호화된 Key Share 문자열                                                                                      |
+| `encryptDevicePassword` | `string` | 입력된 devicePassword의 암호화된 패스워드 문자열로써 서명에 사용됩니다. 이 값은 wid, pvencstr과 쌍을 이룹니다. |

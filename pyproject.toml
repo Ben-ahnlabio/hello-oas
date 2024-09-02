@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "oas"
+version = "0.1.0"
+description = ""
+authors = ["Ben <ben@ahnlab.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.112.2"
+uvicorn = "^0.30.6"
+requests = "^2.32.3"
+aiohttp = "^3.10.5"
+flask = "^3.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

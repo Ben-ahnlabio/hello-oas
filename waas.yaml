@@ -10,6 +10,16 @@ info:
 
     Access token 발급을 위한 Client ID와 Client Secret 생성 방법은 [연동가이드](https://docs.waas.myabcwallet.com/en/getting-started/guide/#_7)를 참조바랍니다.
 
+    ```
+    - 같은 개념에는 같은 용어 사용 필요
+    - web 에서 요청 시 cors 에러 발생함
+    - secure channel 관련 예제 코드 (https://docs.waas.myabcwallet.com/ko/getting-started/guide/secure-channel/#encryptdecrypt-secret-data)
+      - javascript, python 예제 코드 내용이 다르다
+      - javascript 에는 entry point 가 없음
+      - python 에는 암호화 예제 함수가 없음
+      - python indent 안맞음
+    ```
+
   termsOfService: https://api.id.myabcwallet.com/query/v2/terms?service=waas-admin&language=ko
 
   contact:
@@ -20,6 +30,7 @@ externalDocs:
   url: https://docs.waas.myabcwallet.com/ko/
 
 servers:
+  - url: http://localhost:8000/
   - url: https://dev-api.waas.myabcwallet.com/
   - url: https://api.waas.myabcwallet.com/
 
@@ -28,8 +39,10 @@ tags:
     description: Auth
   - name: Member
     description: Member
+  - name: MPC
+    description: MPC
 paths:
-  /auth/secure/channel/create:
+  /secure/channel/create:
     post:
       tags:
         - Auth
@@ -46,6 +59,12 @@ paths:
         (AES/CBC/PKCS7Padding 사용)
 
         복호화 결과가 요청 시 보낸 평문과 일치하다면 채널이 정상적으로 생성된 것 입니다.
+
+        ```
+        - 문서에 GET 으로 잘못 표기
+        - 문서에 있는데로 요청 시 404 에러 발생함. 주소 잘못되어있음 /auth/secure/channel/create -> /secure/channel/create
+        ```
+
       operationId: createSecureChannel
       requestBody:
         description: 보안 채널 생성
@@ -75,14 +94,22 @@ paths:
       summary: 이메일 로그인
       operationId: emailLogin
       security:
-        - BasicAuth: []
-        - ApiKeyAuth: []
+        - ClientID/Secret: []
+        - SecureChannel: []
       description: |-
 
         [iPhone, iPod, iPad, Android] 이 외는 웹으로 처리되며 인증 토큰의 유효시간이 달라집니다.
 
         - Web: accessToken 10분 / refreshToken 60분
         - Mobile: accessToken 1일 / refreshToken 6일
+
+
+        ```
+        - `username` email ? 이면 다른 곳에서도 같은 field 이름을 써야함. `/member/user-management/users/{email}` 에서는 email 이라는 field 이름 사용함
+        - `audience` 항상 값이 `https://mw.myabcwallet.com` 인가요? 항상 같은 값을 일부러 보내야 하나요?
+        - `audience` 는 /member/user-management/users/{email} 의 `serviceid` 와 같은 개념인가요? field 이름 같아야 함 
+        - 422 unprocessable entity 에러 발생. 어떤 상황인지 명시 필요
+        ```
 
       requestBody:
         description: 이메일 로그인 요청 정보
@@ -99,14 +126,28 @@ paths:
                 $ref: "#/components/schemas/LoginResponseBody"
 
         "400":
-          description: Invalid status value
+          description: 잘못된 요청
+
+          content:
+            application/json:
+              examples:
+                invalid_channel:
+                  summary: 채널이 유효하지 않은 경우
+                  value:
+                    code: 611
+                    msg: "Channel is not vaild."
+                    timeout: 0
+        "422":
+          description: "Error: Unprocessable Entity (client id, client secret, )"
 
   /auth/auth-service/v2/{social-network-name}/login:
     get:
       tags:
         - Auth
-      summary: 소셜 로그인
+      summary: 소셜 로그인 요청
       operationId: socialLogin
+      security:
+        - ClientID/Secret: []
       description: |-
 
         ### Apple Login
@@ -116,6 +157,13 @@ paths:
         사용자가 Private email relay 를 사용할 경우 애플이 생성하는 랜덤 이메일 주소를 기준으로 토큰이 생성됩니다. 
 
         따라서 기존에 가입된 사용자의 경우라도 이메일 숨김 설정에 의해서 신규 가입으로 처리될 수 있다는 알림을 보여주어야 할 필요가 있습니다.
+
+        로그인 화면의 안내에 따라 로그인을 수행하면 요청 시 URL 입력 여부에 따라 결과 값이 달라집니다.
+
+        ```
+        - 입력 파라미터에 따라 response code, 동작 방식이 달란서 혼란스러움
+        - 서버에서 호출하는 경우와 client 에서 호출하는 경우로 분리 하면 좋을거같음
+        ```
 
       parameters:
         - name: social-network-name
@@ -137,6 +185,7 @@ paths:
           schema:
             type: string
           description: 토큰 수신자 (서비스 ID)
+          example: "https://mw.myabcwallet.com"
 
         - name: url
           in: query
@@ -149,6 +198,8 @@ paths:
         "302":
           description: |-
 
+            #### [URL 입력한 경우]
+
             리다이렉트하기 위한 302 Found를 반환합니다. 
 
             리다이렉트 URL은 사전에 등록되어 있는 클라이언트 ID와 Callback URL 등의 정보들이 포함되어 있습니다.
@@ -159,17 +210,15 @@ paths:
             Location:
               schema:
                 type: string
-                example: "https://accounts.google.com/o/oauth2/v2/auth?client_id=983602811377-eip0deuhu3o5hdiao4ng1or4dmopu9ad.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/auth-service/google/callback&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email&prompt=consent&access_type=offline"
+                example: "https://accounts.google.com/o/oauth2/v2/auth?client_id=..."
                 description: Callback URL
 
         "200":
           description: |-
 
-            로그인 화면의 안내에 따라 로그인을 수행하면 요청 시 URL 입력 여부에 따라 결과 값이 달라집니다.
+            #### [URL 입력하지 않은 경우]
 
-            #### [URL 입력한 경우]
-            입력된 URL로 302 Redirect 됩니다. 서버 연동 시 생성된 토큰 발급을 참조하여 해당 요청을 수행하면 JWT 인증 토큰을 받게 됩니다.
-
+            JWT 인증 토큰을 반환합니다.
           content:
             application/json:
               schema:
@@ -183,17 +232,22 @@ paths:
                     expires_in: 3600
                     refresh_token: tGzv3JOkF0XG5Qx2TlKWIA
 
-      security:
-        - BasicAuth: []
-
   /auth/auth-service/v2/finalize:
     get:
       tags:
         - Auth
       summary: 서버에서 연동 시 생성된 토큰 발급 받는 방법
+      description: |-
+
+        SNS (google, apple, naver, kakao, line) 서버로 인증 토큰 검증을 수행하고 정상인 경우 응답으로 JWT 토큰을 반환합니다.
+
+        ```
+        - code 값 설명? 사용 예시 문서 필요
+        ```
+
       operationId: finalizeLogin
       security:
-        - BasicAuth: []
+        - ClientID/Secret: []
 
       parameters:
         - name: code
@@ -218,7 +272,7 @@ paths:
       summary: SNS 인증 토큰으로 로그인
       operationId: tokenLogin
       security:
-        - BasicAuth: []
+        - ClientID/Secret: []
 
       parameters:
         - name: token
@@ -247,6 +301,7 @@ paths:
           schema:
             type: string
           description: 토큰 수신자 (서비스 ID)
+          example: "https://mw.myabcwallet.com"
       responses:
         "200":
           description: |-
@@ -285,13 +340,18 @@ paths:
       summary: 인증 토큰 갱신
       operationId: refreshToken
       security:
-        - BasicAuth: []
+        - ClientID/Secret: []
       description: |-
 
         [iPhone, iPod, iPad, Android] 이 외는 웹으로 처리되며 인증 토큰의 유효시간이 달라집니다.
 
         - Web: accessToken 10분 / refreshToken 60분
         - Mobile: accessToken 1일 / refreshToken 6일
+
+
+        ```
+        - `grant_type` : 선택지가 하나 뿐이면 불필요한것 아닌지
+        ```
 
       requestBody:
         description: 인증 토큰 갱신 정보 요청
@@ -313,8 +373,16 @@ paths:
       tags:
         - Auth
       summary: 검증 키 가져오기
-      operationId: jwks
+      description: |-
 
+        ```
+        - url 이 너무 구체적임(내부 구현이 노출되어있음)
+        - 사용자 관점에서 .well-known ~ 이하 왜 필요한지?
+        - userPoolId 에 대한 설명 필요
+        - 어떤 상황에서 사용하는 API 인지 설명
+        ```
+
+      operationId: jwks
       parameters:
         - name: userPoolId
           in: path
@@ -324,7 +392,14 @@ paths:
           description: JWT issuer의 URI
       responses:
         "200":
-          description: 성공
+          description: |-
+
+            성공
+
+            ```
+            - 성공인지? 결과가 제대로 나온건지?
+            ```
+
           content:
             application/json:
               examples:
@@ -352,6 +427,12 @@ paths:
         - `changepassword` : 비밀번호 변경 
         - `initpassword` `: 비밀번호 초기화
 
+
+        ```
+        - POST 여야 하는거 아닌지?
+        - security 필요한 거 아닌지?
+        ```
+
       parameters:
         - name: email
           in: path
@@ -365,6 +446,10 @@ paths:
           required: false
           schema:
             type: string
+            enum:
+              - ko
+              - en
+              - ja
           description: "언어 설정[ko, en, ja] (default: en)"
 
         - name: template
@@ -396,6 +481,12 @@ paths:
         - `changepassword` : 비밀번호 변경 
         - `initpassword` : 비밀번호 초기화
 
+
+        ```
+        - email template 종류 사용안함
+        - `serviceid` 하나 뿐이라면 입력 불필요?
+        ```
+
       parameters:
         - name: email
           in: path
@@ -421,6 +512,49 @@ paths:
       responses:
         "200":
           description: 성공 (empty response)
+        "400":
+          description: |-
+
+            bad request
+
+            ```
+            - 코드가 틀린 경우 발생함. 
+            - 존재하지 않는 이메일인 경우 발생함.
+            - 그런데 요청이 아예 잘못됐는지? 코드가 틀린경우와 구분되지 않음.
+            - response 가 not found 로 출력됨
+            ```
+
+          content:
+            application/json:
+              examples:
+                not_found:
+                  summary: Not Found
+                  value:
+                    code: 404
+                    msg: "Not Found"
+                    object: null
+                    errorResponse: '{"code":404,"msg":"Not Found"}'
+
+        "404":
+          description: |-
+
+            not found
+
+            ```
+            - 언제 발생하는지?
+            - URL 이 아예 틀린 것인지?
+            ```
+
+          content:
+            application/json:
+              examples:
+                not_found:
+                  summary: Not Found
+                  value:
+                    code: 404
+                    msg: "Not Found"
+                    object: null
+                    errorResponse: '{"code":404,"msg":"Not Found"}'
 
   /member/user-management/users/{email}:
     get:
@@ -431,6 +565,11 @@ paths:
       description: |-
 
         회원 가입 가능 여부 조회
+
+        ```
+        - 회원 존재하는 경우 반응 문서에 명시되어있지 않음
+        - 필수 파라미터 누락 시 회원 존재와 response body 가 다름 (뭐가 문제인지 명시해줘야 좋을듯)
+        ```
 
       parameters:
         - name: email
@@ -446,10 +585,30 @@ paths:
           schema:
             type: string
           description: 서비스 구분을 위한 서비스 ID
+          example: "https://mw.myabcwallet.com"
 
       responses:
         "200":
-          description: 성공 (empty response)
+          description: 성공 (회원 가입 가능)
+        "400":
+          description: 존재하는 회원
+          content:
+            application/json:
+              examples:
+                email_is_already_in_use:
+                  summary: 존재하는 회원
+                  value:
+                    code: 606
+                    msg: "Email is already in use."
+                    object: null
+                    errorResponse: '{"code":606,"msg":"Email is already in use."}'
+                service_id_field_required:
+                  summary: 필수 파라미터 누락
+                  value:
+                    status: 400
+                    error: "Bad Request"
+                    timestamp: "2021-09-30T07:00:00.000+00:00"
+                    path: /member/user-management/users/hello@gmail.com
 
   /member/user-management/users/v2/adduser:
     post:
@@ -461,9 +620,16 @@ paths:
 
         회원 약관 처리: 동의 1, 미동의 0 으로 처리합니다.
 
+        ```
+        - 암호화 필요 필드 `password` 암호화를 어떻게 하는지 모르겠음. 예제 코드 필요.
+        - 발생할 수 있는 상황에 대한 에러 설명 없음 (precondition failed)
+        - `code` 설명 필요
+          - 이메일 인증 코드는 `/member/mail-service/{email}/sendcode` api 를 verify 로 호출 해서 사용자에게 입력을 받아야 함.
+        ```
+
       security:
-        - BasicAuth: []
-        - ApiKeyAuth: []
+        - ClientID/Secret: []
+        - SecureChannel: []
 
       requestBody:
         description: 회원 생성 요청 정보
@@ -475,6 +641,19 @@ paths:
       responses:
         "201":
           description: 성공 (empty response)
+        "412":
+          description: 오류
+          content:
+            application/json:
+              examples:
+                invalid_code:
+                  summary: Precondition failed
+                  description: Precondition failed
+                  value:
+                    code: 412
+                    msg: "Precondition Failed"
+                    object: null
+                    errorResponse: '{"code":412,"msg":"Precondition Failed"}'
 
   /member/user-management/v2/join:
     post:
@@ -483,7 +662,7 @@ paths:
       summary: SNS 회원 생성
       operationId: memberSNSJoin
       security:
-        - BasicAuth: []
+        - ClientID/Secret: []
 
       description: |-
 
@@ -506,6 +685,13 @@ paths:
         - Member
       summary: 회원 정보 추가 업데이트
       operationId: memberUpdate
+      description: |-
+
+        ```
+        - 동작 안함 405 "Method Not Allowed"
+        - 설명 필요. 어떤 필드 업데이트? 언제 사용하는지?
+        - 인증없이 업데이트 가능?
+        ```
 
       requestBody:
         description: 회원 정보 수정 요청 정보
@@ -523,8 +709,15 @@ paths:
       tags:
         - Member
       summary: 회원 추가 정보 조회
-      operationId: memberGet
+      description: |-
 
+        회원 추가 정보 조회
+
+        ```
+        - `email` path parameter 잘못 표기 
+        - `userid` 갑자기?
+        ```
+      operationId: memberGet
       parameters:
         - name: email
           in: path
@@ -533,9 +726,44 @@ paths:
             type: string
           description: 사용자 이메일
 
+        - name: userid
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 사용자 ID(JWT 인증 토큰의 subject)
+
       responses:
         "200":
-          description: 성공 (empty response)
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUserResponseBody"
+
+  /member/link-service/list:
+    post:
+      tags:
+        - Member
+      summary: 연계 서비스 조회
+      description: |-
+
+        ABC 지갑으로 연동되어 있는 모든 서비스 목록을 반환합니다.
+
+        ```
+        - 요청 body, param 도 없는데 get 이어야 하는거 아닌지? 
+        ```
+
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LinkServiceListResponseBody"
 
   /member/user-management/users/changepassword:
     patch:
@@ -544,7 +772,7 @@ paths:
       summary: 비밀번호 변경
       operationId: memberChangePassword
       security:
-        - BasicAuth: []
+        - ClientID/Secret: []
 
       requestBody:
         description: 비밀번호 변경 요청 정보
@@ -562,9 +790,16 @@ paths:
       tags:
         - Member
       summary: 비밀번호 초기화
+      description: |-
+
+        비밀번호 초기화 요청
+
+        ```
+        - 412, 400 오류 발생. 어떤 상황인지 명시 필요.
+        ```
       operationId: memberInitPassword
       security:
-        - BasicAuth: []
+        - SecureChannel: []
 
       requestBody:
         description: 비밀번호 초기화 요청 정보
@@ -576,6 +811,380 @@ paths:
       responses:
         "200":
           description: 성공 (empty response)
+        "412":
+          description: 오류
+          content:
+            application/json:
+              examples:
+                invalid_code:
+                  summary: Precondition failed
+                  description: Precondition failed
+                  value:
+                    code: 412
+                    msg: "Precondition Failed"
+                    object: null
+                    errorResponse: '{"code":412,"msg":"Precondition Failed"}'
+        "400":
+          description: "잘못된 요청"
+          content:
+            application/json:
+              examples:
+                auth_code_not_exist:
+                  summary: Authentication code does not exist
+                  description: Authentication code does not exist
+                  value:
+                    code: 613
+                    msg: "Authentication code does not exist."
+                    object: null
+                    errorResponse: '{"code":613,"msg":"Authentication code does not exist."}'
+
+  /wapi/v2/mpc/wallets:
+    post:
+      tags:
+        - MPC
+      summary: 지갑 생성/복구
+      description: |-
+
+        사용자 고유 MPC 지갑을 생성합니다.
+
+        사용자는 1개의 고유 지갑을 소유하게 되며, 이미 생성된 지갑이 존재하는 경우, 기존 지갑을 복구합니다.
+
+        devicePassword는 생성 혹은 복구되는 지갑의 Key Share의 암호를 의미합니다. 
+
+        devicePassword를 WaaS로 제출할 때에 Secure-Channel을 사용한 암호화 값을 전달하도록 합니다.
+
+        응답 본문 중 pvencstr은 wid에 해당하는 Key Share의 암호화 문자열이며, encryptDevicePassword와 쌍을 이룹니다.
+
+
+        ```
+        - request body 입력 필드 필수 인지 정보 없음
+        ```
+
+      operationId: createWallet
+      security:
+        - ClientID/Secret: []
+        - SecureChannel: []
+
+      requestBody:
+        description: 지갑 생성 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "test01@ahnlab.com"
+                  description: 사용자 이메일 주소
+                devicePassword:
+                  type: string
+                  example: ""
+                  description: 생성 또는 복구되는 지갑의 Key Share password를 의미합니다. (Secure-Channel 암호화 대상)
+
+      responses:
+        "200":
+          description: |-
+
+            성공
+
+            #### Response Body Fields
+
+            | Field                   | Type     | Description                                                                                                    |
+            | :---------------------- | :------- | :------------------------------------------------------------------------------------------------------------- |
+            | `uid`                   | `string` | 사용자 uid                                                                                                     |
+            | `wid`                   | `number` | 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.                                                        |
+            | `sid`                   | `string` | 지갑 주소                                                                                                      |
+            | `pvencstr`              | `string` | 암호화된 Key Share 문자열                                                                                      |
+            | `encryptDevicePassword` | `string` | 입력된 devicePassword의 암호화된 패스워드 문자열로써 서명에 사용됩니다. 이 값은 wid, pvencstr과 쌍을 이룹니다. |
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+                    description: 사용자 uid
+                  wid:
+                    type: number
+                    example: 6,
+                    description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+                  sid:
+                    type: string
+                    example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+                    description: "지갑 주소"
+                  pvencstr:
+                    type: string
+                    example: "0x1234567890abcdef"
+                    description: "암호화된 Key Share 문자열"
+                  encryptDevicePassword:
+                    type: string
+                    example: "0x1234567890abcdef"
+                    description: "입력된 devicePassword의 암호화된 패스워드 문자열로써 서명에 사용됩니다. 이 값은 wid, pvencstr과 쌍을 이룹니다."
+
+  /wapi/v2/mpc/wallets/info:
+    get:
+      tags:
+        - MPC
+      operationId: getWalletInfo
+      summary: 사용자 지갑 정보 조회
+      description: |-
+
+        사용자 MPC 지갑을 조회합니다.
+
+
+        ```
+        - sid, ethAddress 중 하나만 사용하면 될 것 같은데 둘 다 있는 이유가 있나요?
+        - favorites, autoconfirms 필드 설명이 없음
+        ```
+
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "657bdc790b67b600128a865f"
+                    description: _id
+                  uid:
+                    type: string
+                    example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+                    description: 사용자 uid
+                  wid:
+                    type: number
+                    example: 6
+                    description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+                  email:
+                    type: string
+                    example: "test_0@myabcwallet.com"
+                    description: 사용자 이메일 주소
+                  accounts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "0"
+                          description: " "
+                        sid:
+                          type: string
+                          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+                          description: "지갑 주소"
+                        ethAddress:
+                          type: string
+                          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+                          description: "지갑 주소"
+                        icon:
+                          type: string
+                          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4Hs...."
+                        name:
+                          type: string
+                          example: "Account 1"
+                        signer:
+                          type: string
+                          example: "mpc"
+                        pubkey:
+                          type: string
+                          example: "0x025c5d89f60eba1b8fc5c2bd2fa28eefe48f4c950815acd7...."
+                  favorites:
+                    type: array
+                    example: []
+                  autoconfirms:
+                    type: array
+                    example: []
+                  twoFactorEnabled:
+                    type: boolean
+                    example: false
+                  twoFactorResetRetryCount:
+                    type: number
+                    example: 0
+                  twoFactorRetryFreezeEndTime:
+                    type: number
+                    example: 0
+                  twoFactorFreezeEndTime:
+                    type: number
+                    example: 0
+  /wapi/v2/mpc/check/device-password:
+    post:
+      tags:
+        - MPC
+      operationId: checkDevicePassword
+      security:
+        - BearerAuth: []
+        - SecureChannel: []
+
+      summary: 사용자 패스워드 검증
+      description: |-
+
+        MPC 키 생성에 사용된 devicePassword의 원문과 encryptDevicePassword의 복호화 결과의 원문이 동일한지 검증합니다. 
+
+        encryptDevicePassword는 WaaS 서비스에서 암호화되었기 때문에 클라이언트에서 복호화할 수 없습니다.
+
+        ```
+        - 이 API 를 언제 사용해야 하는지 모르겠음
+        - `encryptDevicePassword는 WaaS 서비스에서 암호화되었기 때문에 클라이언트에서 복호화할 수 없습니다.` 설명 이해 어려움
+        - 문서 순서... /mpc/wallets 였다가 /mpc/check/... 같은 레벨 API 끼리 모여있으면 좋을 듯
+        ```
+
+      requestBody:
+        description: 패스워드 검증 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required:
+                - encryptDevicePassword
+                - devicePassword
+              type: object
+              properties:
+                encryptDevicePassword:
+                  type: string
+                  example: "WeZFHUUwcU0LxTVCEJ5Suw=="
+                  description: 지갑 생성/복구 시 응답으로 받은 encryptDevicePassword(암호화 대상)
+                devicePassword:
+                  type: string
+                  example: "ukf9SrDdv4AgpSzU8SO2C7gC1f4v5/pa/Zuow1VLQaK3raQEbul3C5LHBpaum+Og"
+                  description: 비밀번호 원문(암호화 대상)
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+
+  /wapi/v2/mpc/wallets/check/device-password/share:
+    post:
+      tags:
+        - MPC
+      operationId: checkDevicePasswordShare
+      security:
+        - BearerAuth: []
+        - SecureChannel: []
+
+      summary: KeyShare 패스워드 검증
+      description: |-
+
+        devicePassword가 지갑 생성/복구에서 사용된 devicePassword인지 확인 검증합니다.
+
+        ```
+        - 이 API 를 언제 사용해야 하는지 모르겠음
+        - request body 필수 파라미터인지 정보 없음
+        ```
+
+      requestBody:
+        description: 패스워드 검증 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required:
+                - encryptDevicePassword
+                - devicePassword
+              type: object
+              properties:
+                devicePassword:
+                  type: string
+                  example: "WeZFHUUwcU0LxTVCEJ5Suw=="
+                  description: 지갑 생성/복구 시 응답으로 받은 encryptDevicePassword(암호화 대상)
+                pvencstr:
+                  type: string
+                  example: "wl5WmBJdq9NppL66wcSVVo4gjkv/J0Gx+lYt9Pu64ZHLuEE+CurnRGqmVZvFcvzZs9...."
+                  description: 지갑 생성/복구 시 응답으로 받은 pvenc(암호화 대상)
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+  /wapi/v2/sign:
+    post:
+      tags:
+        - MPC
+      operationId: sign
+      security:
+        - BearerAuth: []
+        - SecureChannel: []
+      summary: Sign
+      description: |-
+
+        블록체인에 트랜잭션을 발행하기 위한 데이터를 받아 MPC 서명을 진행합니다.
+
+        성공 시 응답메시지에 서명된 raw transaction을 반환합니다.
+
+        ```
+        - request body `network` 필드에 무슨 값 가능한지 정보 없음
+        - 필수 입력 필드 / 비 필수 입력 순서
+        - 입력 필드 설명 부족
+        ```
+
+      requestBody:
+        description: 서명 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SignRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x02f86b01648405f5e10085078a0fd..."
+
+  /wapi/v2/sign/typed-data:
+    post:
+      tags:
+        - MPC
+      operationId: signTypedData
+      security:
+        - BearerAuth: []
+        - SecureChannel: []
+      summary: Sign Typed Data
+      description: |-
+
+        성공 시 응답메시지에 서명된 raw transaction을 반환합니다.
+
+      requestBody:
+        description: 서명 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SignTypedDataRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x02f86b01648405f5e10085078a0fd..."
 
 components:
   schemas:
@@ -588,6 +1197,7 @@ components:
         pubkey:
           type: string
           example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+          description: "요청자의 공개키 (ECPublicKey : secp256r1) 04(prefix) + x + y 비 압축 형태"
         plain:
           type: string
           example: test
@@ -616,18 +1226,24 @@ components:
         grant_type:
           type: string
           example: password
+          enum:
+            - password
+          description: "요청 타입: [ password ]"
         username:
           type: string
-          example: johndoe
+          example: test01@ahnlab.com
+          description: 사용자 이메일
         password:
           type: string
           example: password
+          description: 비밀번호 (암호화 대상)
         audience:
           type: string
           example: https://mw.myabcwallet.com
+          description: 토큰 수신자 (서비스 ID)
         tokentype:
           type: string
-          example: Bearer
+          description: 시스템에서 사용할 토큰 (access token만 반환되며, 사용기간이 짧음)
 
     RefreshTokenRequestBody:
       required:
@@ -638,6 +1254,8 @@ components:
         grant_type:
           type: string
           example: refresh_token
+          enum:
+            - refresh_token
         refresh_token:
           type: string
           example: tGzv3JOkF0XG5Qx2TlKWIA
@@ -942,14 +1560,190 @@ components:
           example: "https://mw.myabcwallet.com"
           description: 서비스 구분을 위한 서비스 ID
 
+    SignRequestBody:
+      required:
+        - network
+        - encryptDevicePassword
+        - pvencstr
+        - uid
+        - wid
+        - sid
+        - to
+        - nonce
+        - type
+
+      type: object
+      properties:
+        network:
+          type: string
+          example: "ethereum"
+          description: 네트워크 이름
+        encryptDevicePassword:
+          type: string
+          example: "WeZFHUUwcU0LxTVCEJ5Suw=="
+          description: 지갑 생성/복구 시 응답으로 받은 encryptDevicePassword(암호화 대상)
+        pvencstr:
+          type: string
+          example: "wl5WmBJdq9NppL66wcSVVo4gjkv/J0Gx+lYt9Pu64ZHLuEE+CurnRGqmVZvFcvzZs9...."
+          description: 지갑 생성/복구 시 응답으로 받은 pvenc(암호화 대상)
+        uid:
+          type: string
+          example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+          description: 사용자 uid
+        wid:
+          type: number
+          example: 6
+          description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+        sid:
+          type: string
+          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+          description: 지갑 주소
+        to:
+          type: string
+          example: "0x1234567890abcdef"
+          description: 수신자 주소
+        nonce:
+          type: string
+          example: "0x1234567890abcdef"
+          description: nonce
+        type:
+          type: string
+          example: "0x1234567890abcdef"
+          description: type
+          enum:
+            - EIP1559
+            - Legacy
+            - PERSONAL
+        from:
+          type: string
+        value:
+          type: string
+          description: 16진수 wei
+          example: "0x0"
+        gasPrice:
+          type: string
+        gasLimit:
+          type: string
+        maxPriorityFeePerGas:
+          type: string
+          description: EIP-1559 type만 지원
+        maxFeePerGas:
+          type: string
+          description: EIP-1559 type만 지원
+
+    SignTypedDataRequestBody:
+      required:
+        - network
+        - encryptDevicePassword
+        - pvencstr
+        - uid
+        - wid
+        - sid
+        - messagejson
+        - type
+
+      type: object
+      properties:
+        network:
+          type: string
+          example: "ethereum"
+          description: 네트워크 이름
+        encryptDevicePassword:
+          type: string
+          example: "WeZFHUUwcU0LxTVCEJ5Suw=="
+          description: 지갑 생성/복구 시 응답으로 받은 encryptDevicePassword(암호화 대상)
+        pvencstr:
+          type: string
+          example: "wl5WmBJdq9NppL66wcSVVo4gjkv/J0Gx+lYt9Pu64ZHLuEE+CurnRGqmVZvFcvzZs9...."
+          description: 지갑 생성/복구 시 응답으로 받은 pvenc(암호화 대상)
+        uid:
+          type: string
+          example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+          description: 사용자 uid
+        wid:
+          type: number
+          example: 6
+          description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+        sid:
+          type: string
+          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+          description: 지갑 주소
+        messagejson:
+          type: string
+          example: '{"domain":{"name":"Ethereum","version":"1"},"message":{"name":"John Doe","wallet":"0x1234567890abcdef"}'
+          description: 서명할 메시지
+        type:
+          type: string
+          example: "v3"
+          description: type
+          enum:
+            - v3
+            - v4
+    GetUserResponseBody:
+      type: object
+      properties:
+        keyshare:
+          type: string
+          example: "true"
+        otp:
+          type: string
+          example: "false"
+        ethaddress:
+          type: string
+          example: "0xeD84CcA0dd0694A89411031d89618C881a6431F2"
+
+    LinkServiceListResponseBody:
+      type: array
+      items:
+        type: object
+        properties:
+          email:
+            type: string
+            example: "james@ahnlab.io"
+          serviceid:
+            type: string
+            example: "https://mw.myabcwallet.com"
+          linkname:
+            type: string
+            example: "coligence.io"
+          regdate:
+            type: string
+            example: "2023-04-28T01:57:09.809+00:00"
+
   securitySchemes:
-    ApiKeyAuth:
+    SecureChannel:
       type: apiKey
       in: header
       name: Secure-Channel
+      description: |-
 
-    BasicAuth:
+        Secure-Channel
+
+        [Secure-Channel Docs](https://docs.waas.myabcwallet.com/ko/getting-started/guide/secure-channel/)
+
+    ClientID/Secret:
       type: http
       scheme: basic
+      description: |-
+
+        사전에 공유된 Basic token "Basic BASE64(CLIENT_ID:CLIENT_SECRET)"
+
+        [API Key](https://docs.waas.myabcwallet.com/ko/getting-started/guide/#_7)
+
+        ```
+        - 발급받는 방법 설명 링크 필요
+        - client id, client secret base64 encoding 관련 예시
+        - [여기](https://docs.waas.myabcwallet.com/ko/getting-started/guide/#_7) 에 설명. 같은 용어 사용 필요(ClientID/Secret,ApiKey), 예제 있으면 좋을듯
+        ```
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: |-
+        인증 JWT
+
+        토큰은 사용자의 로그인 정보를 담고 있는 권한 증명 수단으로 WaaS API 호출에 사용됩니다.
+
+        [인증 JWT Docs](https://docs.waas.myabcwallet.com/ko/getting-started/guide/login/#jwt)
 
 x-original-swagger-version: "2.0"
