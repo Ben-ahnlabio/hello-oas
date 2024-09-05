@@ -2353,6 +2353,386 @@ paths:
                     type: string
                     example: 0
 
+  /wapi/v2/transactions/raw-tx/send:
+    post:
+      tags:
+        - EVM
+      operationId: evmSendRawTransaction
+      security:
+        - BearerAuth: []
+      summary: 트랜잭션 전송
+      description: |-
+
+        온체인 블록에 포함시키기 위해 사인된 트랜잭션을 전송합니다.
+
+        ```
+        - response body 설명 없음
+        ```
+
+      requestBody:
+        description: Raw Transaction 전송 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/RawTransactionSendRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x02f86f8301388180847735940084773594008401312d0094caccfd4b61823bc105a7354c2afc1e24f212a9628080c080a08b0418e20359c5f3d5fbfdc0f8c71bf01d9a24ff84b58a86f0a06fc641490496a0607bd39f35bb48964fbe401fce252b8b9aa3d69c9f02db3b79889d591a5ac3b2"
+
+  /wapi/v2/transactions/block:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetBlock
+      security:
+        - BearerAuth: []
+      summary: Block 조회
+      description: |-
+
+        BlockNumber에 해당하는 Block 정보를 조회합니다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: blockNumber
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 조회할 blockNumber
+          example: "1453784"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                    example: "0x025a2d9392fe302e28cb47ebf955461d143f8715341b1018ec56da99cc9467d7"
+                  parentHash:
+                    type: string
+                    example: "0x3625e27e3ec985058c3e3a0bc2861c24264bbedba8c20ed444204aa1d678ec01"
+                  sha3Uncles:
+                    type: string
+                    example: "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347"
+                  miner:
+                    type: string
+                    example: "0x31d7dccbe7b48bacbd4f99bfffa00fcd27c1434e"
+                  stateRoot:
+                    type: string
+                    example: "0x55784b01d947b729650561e5d48506aa21df2d015e8ac548e772a7a881a9f832"
+                  transactionsRoot:
+                    type: string
+                    example: "0x8301724965952fa9abff1d84cecaf3a8cc08afcaa8577036c51e0e87df9e6648"
+                  receiptsRoot:
+                    type: string
+                    example: "0x16546198762ad6ad22fdf6f7f7fd222376eb0cfdf410881807af4cd2b6106d4f"
+                  number:
+                    type: string
+                    example: "0x162ed8"
+                  gasUsed:
+                    type: string
+                    example: "0x33450"
+                  gasLimit:
+                    type: string
+                    example: "0x47e7c4"
+                  extraData:
+                    type: string
+                    example: "0xd783010305844765746887676f312e352e31856c696e7578"
+                  logsBloom:
+                    type: string
+                    example: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                  timestamp:
+                    type: string
+                    example: "0x5729881b"
+                  difficulty:
+                    type: string
+                    example: "0x1ecf996105e1"
+                  totalDifficulty:
+                    type: string
+                    example: "0xefe898da29de6f85"
+                  sealFields:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  uncles:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  transactions:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - "0xa9a55b90e44fa15feec0e5ba3d0dcec882ed22f0dc935c68345f0200e95b3dc3"
+                      - "0x3af0810463ba8ed79c5dde4e20b4fc82af9c78a6dfdb1c7871b6123edf9f252b"
+                      - "0xbc5f4077bc9e3548d256cb8c2cc7482095e05857e6330917ffdba054a05c3265"
+                      - "0xcdd01f244595cfb6ff092e85f1a6bb0afb327a018c57453258a28edaecbcd060"
+                      - "0x3b2616e381230676dd21cbe9316cfc40ef7045b2b766253624cfaf2c73aaa030"
+                      - "0xd4da5a4a92e11bede7e2438c20bba498d1a3f5d0492ba812a3f747cc477997c6"
+                      - "0x9087011789ed7eff26200fabb00ead5370f03ec45233bbd29b15183d69be132e"
+                      - "0xd6d6b9638e207aca18ef5150f4efc75b509e2fbffe1be6bc862ce32f9ae78d47"
+                      - "0x9ae11cc1fb54df84761aa3684ed6fcb486aaa289067d3b302e0f479aad49fec5"
+                      - "0xeee1c00b5835cf0719bc91bebc3a63e8bf50695b1dbbd0a9ac405eafd197ddbe"
+                  size:
+                    type: string
+                    example: "0x68d"
+                  mixHash:
+                    type: string
+                    example: "0x7c921b6399f84c398211d9f87283217918347d2002003961952e67353ca4a8b4"
+                  nonce:
+                    type: string
+                    example: "0x61a8d77d3e6efa6d"
+                  baseFeePerGas:
+                    type: string
+                    nullable: true
+                    example: null
+
+  /wapi/v2/transactions/receipt:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTransactionReceipt
+      security:
+        - BearerAuth: []
+      summary: Receipt 조회
+      description: |-
+
+        Block에 포함된 Transaction receipt를 조회합니다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: hash
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 조회할 trasaction hash
+          example: "0xa9a55b90e44fa15feec0e5ba3d0dcec882ed22f0dc935c68345f0200e95b3dc3"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionHash:
+                    type: string
+                    example: "0xa9a55b90e44fa15feec0e5ba3d0dcec882ed22f0dc935c68345f0200e95b3dc3"
+                  transactionIndex:
+                    type: string
+                    example: "0x0"
+                  blockHash:
+                    type: string
+                    example: "0x025a2d9392fe302e28cb47ebf955461d143f8715341b1018ec56da99cc9467d7"
+                  blockNumber:
+                    type: string
+                    example: "0x162ed8"
+                  from:
+                    type: string
+                    example: "0x32be343b94f860124dc4fee278fdcbd38c102d88"
+                  to:
+                    type: string
+                    example: "0x17d294f910c9891ee648575b1caff2d59bcf2c1d"
+                  cumulativeGasUsed:
+                    type: string
+                    example: "0x5208"
+                  gasUsed:
+                    type: string
+                    example: "0x5208"
+                  contractAddress:
+                    type: string
+                    nullable: true
+                    example: null
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  status:
+                    type: string
+                    nullable: true
+                    example: null
+                  logsBloom:
+                    type: string
+                    example: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                  type:
+                    type: string
+                    example: "0x0"
+                  effectiveGasPrice:
+                    type: string
+                    example: "0x6fc23ac00"
+
+  /wapi/v2/transactions/count:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTransactionCount
+      security:
+        - BearerAuth: []
+      summary: Transaction count
+      description: |-
+
+        입력된 지갑의 Transaction 개수를 조회합니다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 조회할 지갑 주소
+          example: "0x32be343b94f860124dc4fee278fdcbd38c102d88"
+
+        - name: block
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 입력한 blockNumber까지 생성된 transaction의 개수
+          example: "1435702"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x1"
+
+  /wapi/v2/transactions/hash:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTransactionByHash
+      security:
+        - BearerAuth: []
+      summary: Transaction 정보 조회
+      description: |-
+
+        Transaction hash를 통해 트랜잭션 정보를 조회합니다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: hash
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 조회할 trasaction hash
+          example: "0xa9a55b90e44fa15feec0e5ba3d0dcec882ed22f0dc935c68345f0200e95b3dc3"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                    example: "0x2b28df4fa5ffe35c39c97267282b3a42beaac5feb49e9e92e48fb97e91510ce2"
+                  nonce:
+                    type: string
+                    example: "0x5"
+                  blockHash:
+                    type: string
+                    example: "0x6a374a6b49e62c6d95e7aecf6e31bb23aa5c231bda0d63fae72fa7d3ed223626"
+                  blockNumber:
+                    type: string
+                    example: "0x163fe2"
+                  transactionIndex:
+                    type: string
+                    example: "0x0"
+                  from:
+                    type: string
+                    example: "0xd4f15e5a668551953b06ee07d663f5fe3338b0ef"
+                  to:
+                    type: string
+                    example: "0xbb9bc244d798123fde783fcc1c72d3bb8c189413"
+                  value:
+                    type: string
+                    example: "0x1b1ae4d6e2ef500000"
+                  gasPrice:
+                    type: string
+                    example: "0x4a817c800"
+                  gas:
+                    type: string
+                    example: "0x232db"
+                  input:
+                    type: string
+                    example: "0x"
+                  v:
+                    type: string
+                    example: "0x1c"
+                  r:
+                    type: string
+                    example: "0xac9b2c14fcdd41d7e977424fbc457ffc603792bc2ac4e34d35983a3dc6626f3d"
+                  s:
+                    type: string
+                    example: "0x17b82069e5be34359881290ce6d339421a3907366596c063996e167ff029c7ae"
+                  type:
+                    type: string
+                    example: "0x0"
+                  network:
+                    type: string
+                    nullable: true
+                    example: null
+
 components:
   schemas:
     CreateSecureChannelRequestBody:
@@ -3176,6 +3556,22 @@ components:
           type: string
         maxFeePerGas:
           type: string
+
+    RawTransactionSendRequestBody:
+      required:
+        - network
+        - rawtx
+
+      type: object
+      properties:
+        network:
+          type: string
+          example: "klaytn"
+          description: 네트워크 이름
+        rawtx:
+          type: string
+          example: "0xad6911cd120e5a2f2cd3529d0293d444bd7db09917df2821ba8fc31e079260245b69f89bf381989bdb1e520002fc5b94a24d969b74a08ce9ea860f46939daa011b"
+          description: 직렬화된 Sign 트랜잭션 문자열
 
   securitySchemes:
     SecureChannel:
