@@ -12,6 +12,9 @@ info:
 
     ```
     - 같은 개념에는 같은 용어 사용 필요
+      - Client ID, Client Secret / API Key
+      - username / email / userid
+      - audience / serviceid
     - web 에서 요청 시 cors 에러 발생함
     - secure channel 관련 예제 코드 (https://docs.waas.myabcwallet.com/ko/getting-started/guide/secure-channel/#encryptdecrypt-secret-data)
       - javascript, python 예제 코드 내용이 다르다
@@ -41,6 +44,16 @@ tags:
     description: Member
   - name: MPC
     description: MPC
+  - name: SDK
+    description: SDK
+  - name: EVM
+    description: EVM
+  - name: BTC
+    description: BTC
+  - name: Aptos
+    description: Aptos
+  - name: WalletScan
+    description: Walletscan
 paths:
   /secure/channel/create:
     post:
@@ -242,6 +255,8 @@ paths:
         SNS (google, apple, naver, kakao, line) 서버로 인증 토큰 검증을 수행하고 정상인 경우 응답으로 JWT 토큰을 반환합니다.
 
         ```
+        - POST -> GET ?
+        - '서버에서 연동 시 생성된 토큰 발급 받는 방법' : 적절한 제목이 있을까요?
         - code 값 설명? 사용 예시 문서 필요
         ```
 
@@ -269,10 +284,17 @@ paths:
     get:
       tags:
         - Auth
-      summary: SNS 인증 토큰으로 로그인
+
       operationId: tokenLogin
       security:
         - ClientID/Secret: []
+      summary: SNS 인증 토큰으로 로그인
+      description: |-
+
+        ```
+        - POST -> GET ?
+        - status code 618 허용 안됨
+        ```
 
       parameters:
         - name: token
@@ -350,6 +372,7 @@ paths:
 
 
         ```
+        - 설명 부족
         - `grant_type` : 선택지가 하나 뿐이면 불필요한것 아닌지
         ```
 
@@ -376,6 +399,7 @@ paths:
       description: |-
 
         ```
+        - POST -> GET ?
         - url 이 너무 구체적임(내부 구현이 노출되어있음)
         - 사용자 관점에서 .well-known ~ 이하 왜 필요한지?
         - userPoolId 에 대한 설명 필요
@@ -668,6 +692,10 @@ paths:
 
         회원 약관 처리: 동의 1, 미동의 0 으로 처리합니다.
 
+        ```
+        - socialtype 에 google apple 말고 다른것?
+        ```
+
       requestBody:
         description: 회원 가입 요청 정보
         content:
@@ -862,7 +890,7 @@ paths:
 
       operationId: createWallet
       security:
-        - ClientID/Secret: []
+        - BearerAuth: []
         - SecureChannel: []
 
       requestBody:
@@ -908,7 +936,7 @@ paths:
                     description: 사용자 uid
                   wid:
                     type: number
-                    example: 6,
+                    example: 6
                     description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
                   sid:
                     type: string
@@ -920,7 +948,7 @@ paths:
                     description: "암호화된 Key Share 문자열"
                   encryptDevicePassword:
                     type: string
-                    example: "0x1234567890abcdef"
+                    example: "sEbZRmmOrvmMI83XugEzEVwRpwkBBCeXb4jMq1f8Wao="
                     description: "입력된 devicePassword의 암호화된 패스워드 문자열로써 서명에 사용됩니다. 이 값은 wid, pvencstr과 쌍을 이룹니다."
 
   /wapi/v2/mpc/wallets/info:
@@ -948,71 +976,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    example: "657bdc790b67b600128a865f"
-                    description: _id
-                  uid:
-                    type: string
-                    example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
-                    description: 사용자 uid
-                  wid:
-                    type: number
-                    example: 6
-                    description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
-                  email:
-                    type: string
-                    example: "test_0@myabcwallet.com"
-                    description: 사용자 이메일 주소
-                  accounts:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          example: "0"
-                          description: " "
-                        sid:
-                          type: string
-                          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
-                          description: "지갑 주소"
-                        ethAddress:
-                          type: string
-                          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
-                          description: "지갑 주소"
-                        icon:
-                          type: string
-                          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4Hs...."
-                        name:
-                          type: string
-                          example: "Account 1"
-                        signer:
-                          type: string
-                          example: "mpc"
-                        pubkey:
-                          type: string
-                          example: "0x025c5d89f60eba1b8fc5c2bd2fa28eefe48f4c950815acd7...."
-                  favorites:
-                    type: array
-                    example: []
-                  autoconfirms:
-                    type: array
-                    example: []
-                  twoFactorEnabled:
-                    type: boolean
-                    example: false
-                  twoFactorResetRetryCount:
-                    type: number
-                    example: 0
-                  twoFactorRetryFreezeEndTime:
-                    type: number
-                    example: 0
-                  twoFactorFreezeEndTime:
-                    type: number
-                    example: 0
+                $ref: "#/components/schemas/WalletInfo"
+
   /wapi/v2/mpc/check/device-password:
     post:
       tags:
@@ -1133,6 +1098,10 @@ paths:
         - request body `network` 필드에 무슨 값 가능한지 정보 없음
         - 필수 입력 필드 / 비 필수 입력 순서
         - 입력 필드 설명 부족
+        - `wid` 암호화 대상 설명 없음
+        - `nonce` 는 어떻게 구하나요?
+        - `type` 은 뭐 선택해야 하나요?
+        - `uid` `sid` 는 서버가 알고 있는 내 정보 아닌가요?
         ```
 
       requestBody:
@@ -1167,6 +1136,12 @@ paths:
 
         성공 시 응답메시지에 서명된 raw transaction을 반환합니다.
 
+        ```
+        - 설명 부족
+        - v3, v4 설명 부족
+        - `wid` 가 암호화 대상? 설명 필요
+        ```
+
       requestBody:
         description: 서명 요청 정보
         content:
@@ -1185,6 +1160,1198 @@ paths:
                   result:
                     type: string
                     example: "0x02f86b01648405f5e10085078a0fd..."
+
+  /wapi/v2/mpc/wallets/post:
+    post:
+      tags:
+        - SDK
+      operationId: postWallet
+      security:
+        - BearerAuth: []
+      summary: KeyShare 생성 후 호출
+      description: |-
+
+        SDK에서 제공되는 KeyShare 생성 이후 필수로 호출해야 합니다.
+
+        ```
+        - 언제 호출해야 하는지? 예시 필요
+        - request body 필수 입력 field 정보 없음
+        ```
+
+      requestBody:
+        description: KeyShare 생성 후 호출 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PostWalletRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletInfo"
+
+  /wapi/v2/mpc/wallets/recover:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - SDK
+      operationId: getRecoverWallet
+      summary: KeyShare 복구 전 호출
+      description: |-
+
+        SDK에서 제공되는 KeyShare 복구 이전에 호출하여 복구에 필요한 데이터를 얻습니다.
+
+        ```
+        - 언제 호출해야 하는지? 예시 필요
+        ```
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    example: ""
+                    description: 사용자 uid
+                  wid:
+                    type: number
+                    example: 0
+                    description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+                  sid:
+                    type: string
+                    example: ""
+                    description: 지갑 주소
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - SDK
+      operationId: postRecoverWallet
+      summary: KeyShare 복구 호출
+      description: |-
+
+        SDK에서 제공되는 KeyShare 복구 이후 1회 필수 호출합니다.
+
+      requestBody:
+        description: KeyShare 복구 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                ucpubkey:
+                  type: string
+                  example: ""
+                  description: 지갑 생성 응답으로 반환된 ucpubkey
+                uid:
+                  type: string
+                  example: ""
+                  description: 지갑 생성 응답으로 반환된 uid
+                wid:
+                  type: number
+                  example: 0
+                  description: 지갑 생성 응답으로 반환된 wid
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletInfo"
+
+  /wapi/v2/sign/pre:
+    post:
+      tags:
+        - SDK
+      operationId: signPre
+      security:
+        - BearerAuth: []
+      summary: Sign Pre
+      description: |-
+
+        Sign 호출에 필요한 데이터를 반환합니다.
+
+        ```
+        - 필수 입력 필드 위로
+        - response field 설명 없음
+        - response field 중 `data` 예시 값이 null 설명이 없음
+        ```
+
+      requestBody:
+        description: Sign Pre 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PreSignRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreSignResponseBody"
+
+  /wapi/v2/sign/post:
+    post:
+      tags:
+        - SDK
+      operationId: signPost
+      security:
+        - BearerAuth: []
+      summary: PostSign
+      description: |-
+
+        EIP1559, LEGACY Sign 이후 호출합니다.
+
+        ```
+        - request body 중 `message`. 예시도 없고 설명도 없음.
+        - response 내용에 대한 설명 없음
+        ```
+
+      requestBody:
+        description: Sign Post 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PostSignRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0xf85f808080942f5de1341833fa9a83ee5109c64f7dda4da701258080824055a0c428458b5e5eaa08787137eb1ab811c8e99b4a10d01d5b8574148a9d17dff306a05f83bce738fa79e3c9244ff287ac9c5f9d714184468cec3f4645cb7d9c1e3ae1"
+
+  /wapi/v2/address/verify/:
+    get:
+      tags:
+        - EVM
+      operationId: evmVerifyAddress
+      security:
+        - BearerAuth: []
+      summary: 지갑 주소 검증
+      description: |-
+
+        올바른 EVM 기반의 블록체인 주소 체계인지 검증합니다.
+
+        실제 존재하는 주소인지 확인하는 것이 아닌 EVM 주소 체계가 올바른지 확인합니다.
+
+        ```
+        - 문서에 요청 예시 없음
+        ```
+
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 지갑 주소
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+
+  /wapi/v2/address/balance:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetBalance
+      security:
+        - BearerAuth: []
+      summary: 잔액 조회
+      description: |-
+
+        지갑에 소유한 잔액을 조회합니다.
+
+        ```
+        - 요청 예시 없음
+        - network 에 가능한 값이 무엇인지 정보 없음
+        ```
+
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 지갑 주소
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: string
+                    example: "0x0"
+
+  /wapi/v2/contract/eth-call/eip1559:
+    post:
+      tags:
+        - EVM
+      operationId: evmCallEIP1559
+      security:
+        - BearerAuth: []
+      summary: EIP-1559 eth_call
+      description: |-
+
+        실제로 트랜잭션을 생성하여 발행하지 않고 컨트랙트의 method를 실행한 결과를 조회할 수 있습니다. 
+
+        주로 특정 스마트 컨트랙트의 현재 상태를 읽기 위해 사용됩니다. 
+
+        call로 인한 상태 변경은 일어나지 않습니다.
+
+        ```
+        - 요청 예시 없음
+        - request body 설명 없음
+        ```
+
+      requestBody:
+        description: EIP1559 호출 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/EIP1559CallRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x0"
+
+  /wapi/v2/contract/eth-call/legacy:
+    post:
+      tags:
+        - EVM
+      operationId: evmCallLegacy
+      security:
+        - BearerAuth: []
+      summary: Legacy eth_call
+      description: |-
+
+        실제로 트랜잭션을 생성하여 발행하지 않고 컨트랙트의 method를 실행한 결과를 조회할 수 있습니다. 
+
+        주로 특정 스마트 컨트랙트의 현재 상태를 읽기 위해 사용됩니다. 
+
+        call로 인한 상태 변경은 일어나지 않습니다.
+
+      requestBody:
+        description: Legacy 호출 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/EIP1559CallRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x0"
+
+  /wapi/v2/gas/price:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetGasPrice
+      security:
+        - BearerAuth: []
+      summary: 가스비 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gasPrice:
+                    type: string
+                    example: "0x5208"
+
+  /wapi/v2/gas/suggestedGasFees:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetSuggestedGasFees
+      security:
+        - BearerAuth: []
+      summary: 가스비 제안
+
+      description: |-
+
+        EIP 1559를 지원하는 chain에 대해서만 지원한다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  low:
+                    type: object
+                    properties:
+                      suggestedMaxPriorityFeePerGas:
+                        type: string
+                        example: "0.02073725822"
+                      suggestedMaxFeePerGas:
+                        type: string
+                        example: "15.970339979"
+                      minWaitTimeEstimate:
+                        type: number
+                        example: 15000
+                      maxWaitTimeEstimate:
+                        type: number
+                        example: 30000
+                  medium:
+                    type: object
+                    properties:
+                      suggestedMaxPriorityFeePerGas:
+                        type: string
+                        example: "0.02139908561"
+                      suggestedMaxFeePerGas:
+                        type: string
+                        example: "21.553362758"
+                      minWaitTimeEstimate:
+                        type: number
+                        example: 15000
+                      maxWaitTimeEstimate:
+                        type: number
+                        example: 40000
+                  high:
+                    type: object
+                    properties:
+                      suggestedMaxPriorityFeePerGas:
+                        type: string
+                        example: "0.0882"
+                      suggestedMaxFeePerGas:
+                        type: string
+                        example: "27.202524624"
+                      minWaitTimeEstimate:
+                        type: number
+                        example: 15000
+                      maxWaitTimeEstimate:
+                        type: number
+                        example: 60000
+                  estimatedBaseFee:
+                    type: string
+                    example: "15.94960272"
+                  networkCongestion:
+                    type: number
+                    example: 0
+                  latestPriorityFeeRange:
+                    type: array
+                    items:
+                      type: string
+                    example: ["0.022060912", 6]
+                  historicalPriorityFeeRange:
+                    type: array
+                    items:
+                      type: string
+                    example: ["0.00001", "273.17093238"]
+                  historicalBaseFeeRange:
+                    type: array
+                    items:
+                      type: string
+                    example: ["14.897614381", "23.052346282"]
+                  priorityFeeTrend:
+                    type: string
+                    example: "down"
+                  baseFeeTrend:
+                    type: string
+                    example: "down"
+
+  /wapi/v2/gas/estimate/eip1559:
+    post:
+      tags:
+        - EVM
+      operationId: evmEstimateGasEIP1559
+      security:
+        - BearerAuth: []
+      summary: EIP 1559 가스비 예측
+
+      requestBody:
+        description: EIP 1559 가스비 예측 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/EIP1559CallRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x52080x0"
+
+  /wapi/v2/gas/estimate/legacy:
+    post:
+      tags:
+        - EVM
+      operationId: evmEstimateGasLegacy
+      security:
+        - BearerAuth: []
+      summary: Legacy 가스비 예측
+
+      requestBody:
+        description: Legacy 가스비 예측 요청 정보
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/EIP1559CallRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x52080x0"
+
+  /wapi/v2/nft/owner:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTOwner
+      security:
+        - BearerAuth: []
+      summary: NFT 소유 지갑 주소 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+        - name: tokenId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 10진수 Token ID
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0xf901be601848b31bc4455d5c405b0fbc2401c9b4"
+
+  /wapi/v2/nft/symbol:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTSymbol
+      security:
+        - BearerAuth: []
+      summary: NFT Symbol 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "ETH"
+
+  /wapi/v2/nft/name:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTName
+      security:
+        - BearerAuth: []
+      summary: NFT Name 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "ERABC Wallet 2.0"
+
+  /wapi/v2/nft/total-supply:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTTotalSupply
+      security:
+        - BearerAuth: []
+      summary: NFT 전체 발행량 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "59995"
+
+  /wapi/v2/nft/balance:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTBalance
+      security:
+        - BearerAuth: []
+      summary: NFT 보유량 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+        - name: tokenId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 10진수 Token ID
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0"
+
+  /wapi/v2/nft/approved:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTApproved
+      security:
+        - BearerAuth: []
+      summary: NFT 전송 권한 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+        - name: tokenId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 10진수 Token ID
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x0000000000000000000000000000000000000000"
+
+  /wapi/v2/nft/approved-for-all:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTApprovedForAll
+      security:
+        - BearerAuth: []
+      summary: 전체 NFT 전송 권한 조회
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 컨트랙트 주소
+          example: "0xb6f0b37c4f9a7a0b8c11e86e703cd0c498eb3630"
+        - name: owner
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 소유주 주소
+          example: "0xcAcCFD4b61823BC105A7354C2afc1e24F212A962"
+        - name: operator
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 대행자 주소
+          example: "0xAD2596F9506309EA64E81605Aaa4E898134AC1f2"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: false
+
+  /wapi/v2/nft/approve-data:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTApproveData
+      security:
+        - BearerAuth: []
+      summary: NFT 전송 권한 부여 데이터 생성
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: approved
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 대행자 주소
+          example: "0xb6f0b37c4f9a7a0b8c11e86e703cd0c498eb3630"
+        - name: tokenId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 ID
+          example: "1"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x095ea7b3000000000000000000000000caccfd4b61823bc105a7354c2afc1e24f212a9620000000000000000000000000000000000000000000000000000000000000014"
+
+  /wapi/v2/nft/approval-for-all-data:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTApprovalForAllData
+      security:
+        - BearerAuth: []
+      summary: NFT 전체 전송 권한 부여 데이터 생성
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: operator
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 대행자 주소
+          example: "0xb6f0b37c4f9a7a0b8c11e86e703cd0c498eb3630"
+        - name: approved
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: 전송 권한 부여 여부
+          example: true
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x095ea7b3000000000000000000000000caccfd4b61823bc105a7354c2afc1e24f212a962"
+
+  /wapi/v2/nft/transfer-from-data:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetNFTTransferFromData
+      security:
+        - BearerAuth: []
+      summary: NFT 전송 데이터 생성
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 소유자 주소
+          example: "0xcAcCFD4b61823BC105A7354C2afc1e24F212A962"
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 수신자 주소
+          example: "0x"
+        - name: tokenId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 전달하고자 하는 token id
+          example: "1"
+        - name: data
+          in: query
+          required: false
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x23b872dd000000000000000000000000caccfd4b61823bc105a7354c2afc1e24f212a962"
+
+  /wapi/v2/token/transfer-data:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTokenTransferData
+      security:
+        - BearerAuth: []
+      summary: ERC20 토큰 전송 데이터 생성
+      description: |-
+
+        성공 시 응답메시지에 토큰 전송을 위한 data hex 문자열을 반환합니다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+          description: target EOA or CA
+          example: "0x"
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 16진수 wei
+          example: "0x0"
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x23b872dd000000000000000000000000be616d5b24903efc58149f3c7511fec2085c176e000000000000000000000000be616d5b24903efc58149f3c7511fec2085c176e0000000000000000000000000000000000000000000000000000000000000000"
+
+  /wapi/v2/token/info:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTokenInfo
+      security:
+        - BearerAuth: []
+      summary: ERC20 토큰 정보 조회
+      description: |-
+
+        ```
+        - response 예시 이상함
+        - 요청 예시와 query param 안맞음
+        ```
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 컨트랙트 주소
+          example: "0x"
+        - name: eoa
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 보유량을 확인하고 싶은 주소(Optional)
+          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tokenName:
+                    type: string
+                    example: "Wrapped Klay"
+                  decimals:
+                    type: string
+                    example: "18"
+                  totalSupply:
+                    type: string
+                    example: "19082454052396910528774"
+                  symbol:
+                    type: string
+                    example: "WKLAY"
+                  balanceOf:
+                    type: string
+                    example: "0"
+
+  /wapi/v2/token/approve-data:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTokenApproveData
+      security:
+        - BearerAuth: []
+      summary: 토큰 거래 권한 승인
+      description: |-
+
+        토큰 소유자가 대행자에게 토큰 개수에 해당하는 전송 권한을 위임하기 위한 data hex을 반환합니다.
+
+        ```
+        - 응답 예시 이상함
+        ```
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: spender
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 거래 대행자 주소
+          example: "0x"
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 권한을 부여할 토큰의 개수
+          example: "0x0"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "0x095ea7b3000000000000000000000000caccfd4b61823bc105a7354c2afc1e24f212a9620000000000000000000000000000000000000000000000000000000000000001"
+
+  /wapi/v2/token/allowance:
+    get:
+      tags:
+        - EVM
+      operationId: evmGetTokenAllowance
+      security:
+        - BearerAuth: []
+      summary: 허가된 토큰 수량 조회
+      description: |-
+
+        실제 토큰 보유자로부터 대행자에게 권한을 부여한 토큰 개수를 조회합니다.
+
+      parameters:
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+          description: 네트워크 이름
+          example: "klaytn"
+        - name: ca
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 토큰 컨트랙트 주소
+          example: "0xB923b52b60E247E34f9afE6B3fa5aCcBAea829E8"
+        - name: owner
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 실제 토큰 보유자 주소
+          example: "0xcAcCFD4b61823BC105A7354C2afc1e24F212A962"
+        - name: spender
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 거래 대행자 주소
+          example: "0xc18541C89F542E401AD0Cc5C1e81fCa220f3C537"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: 0
 
 components:
   schemas:
@@ -1591,9 +2758,9 @@ components:
           example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
           description: 사용자 uid
         wid:
-          type: number
-          example: 6
-          description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+          type: string
+          example: "wONT9/oYetQAytC/KdF9Jw=="
+          description: 암호화 대상
         sid:
           type: string
           example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
@@ -1661,9 +2828,9 @@ components:
           example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
           description: 사용자 uid
         wid:
-          type: number
-          example: 6
-          description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+          type: string
+          example: "A7k/lWRrOhqFmBIOgl1X6w=="
+          description: 암호화 대상
         sid:
           type: string
           example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
@@ -1709,6 +2876,306 @@ components:
           regdate:
             type: string
             example: "2023-04-28T01:57:09.809+00:00"
+
+    PostWalletRequestBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "test01@ahnlab.com"
+          description: 사용자 이메일
+        address:
+          type: string
+          example: "0x1234567890abcdef"
+          description: 지갑 생성 응답으로 반환된 sid
+        ourpubkey:
+          type: string
+          example: "0x1234567890abcdef"
+          description: 지갑 생성 응답으로 반환된 ourpubkey
+        ucpubkey:
+          type: string
+          example: "0x1234567890abcdef"
+          description: 지갑 생성 응답으로 반환된 ucpubkey
+        uid:
+          type: string
+          example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+          description: 지갑 생성 응답으로 반환된 uid
+        wid:
+          type: string
+          example: "A7k/lWRrOhqFmBIOgl1X6w=="
+          description: 지갑 생성 응답으로 반환된 wid
+    WalletInfo:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "657bdc790b67b600128a865f"
+          description: _id
+        uid:
+          type: string
+          example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+          description: 사용자 uid
+        wid:
+          type: number
+          example: 6
+          description: 지갑 id를 의미하며 지갑을 복구하는 경우 1씩 증가합니다.
+        email:
+          type: string
+          example: "test_0@myabcwallet.com"
+          description: 사용자 이메일 주소
+        accounts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "0"
+                description: " "
+              sid:
+                type: string
+                example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+                description: "지갑 주소"
+              ethAddress:
+                type: string
+                example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+                description: "지갑 주소"
+              icon:
+                type: string
+                example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4Hs...."
+              name:
+                type: string
+                example: "Account 1"
+              signer:
+                type: string
+                example: "mpc"
+              pubkey:
+                type: string
+                example: "0x025c5d89f60eba1b8fc5c2bd2fa28eefe48f4c950815acd7...."
+        favorites:
+          type: array
+          example: []
+        autoconfirms:
+          type: array
+          example: []
+        twoFactorEnabled:
+          type: boolean
+          example: false
+        twoFactorResetRetryCount:
+          type: number
+          example: 0
+        twoFactorRetryFreezeEndTime:
+          type: number
+          example: 0
+        twoFactorFreezeEndTime:
+          type: number
+          example: 0
+
+    PreSignRequestBody:
+      required:
+        - uid
+        - wid
+        - sid
+        - type
+
+      type: object
+      properties:
+        network:
+          type: string
+          example: "ethereum"
+          description: 네트워크 이름
+        encryptDevicePassword:
+          type: string
+          example: "WeZFHUUwcU0LxTVCEJ5Suw=="
+          description: 지갑 생성/복구 시 응답으로 받은 encryptDevicePassword(암호화 대상)
+        pvencstr:
+          type: string
+          example: "wl5WmBJdq9NppL66wcSVVo4gjkv/J0Gx+lYt9Pu64ZHLuEE+CurnRGqmVZvFcvzZs9...."
+          description: 지갑 생성/복구 시 응답으로 받은 pvenc(암호화 대상)
+        uid:
+          type: string
+          example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+          description: 사용자 uid
+        wid:
+          type: string
+          example: "wONT9/oYetQAytC/KdF9Jw=="
+          description: 암호화 대상
+        sid:
+          type: string
+          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+          description: 지갑 주소
+        to:
+          type: string
+          example: "0x1234567890abcdef"
+          description: 수신자 주소
+        nonce:
+          type: string
+          example: "0x1234567890abcdef"
+          description: nonce
+        type:
+          type: string
+          example: "0x1234567890abcdef"
+          description: type
+          enum:
+            - EIP1559
+            - Legacy
+            - PERSONAL
+        from:
+          type: string
+        value:
+          type: string
+          description: 16진수 wei
+          example: "0x0"
+        gasPrice:
+          type: string
+        gasLimit:
+          type: string
+        maxPriorityFeePerGas:
+          type: string
+          description: EIP-1559 type만 지원
+        maxFeePerGas:
+          type: string
+          description: EIP-1559 type만 지원
+
+    PreSignResponseBody:
+      type: object
+      properties:
+        mpcToken:
+          type: string
+          example: "eyJraWQiOiJtcGMiLCJhbGciOiJFZERTQSJ9.eyJ1aWQiOiJhYTMxNjZmZS03NjZjLTQ5MzAtOTg0YS1mZjYwYzJkMjFiM2IiLCJ0aW1lc3RhbXAiOjE3MTIyMjQwMjk4MDksIm9wIjoiZ2VuIiwiZGF0YSI6eyJkc2EiOiJlY2RzYSIsImN1cnZlIjoic2VjcDI1NmsxIn0sImlhdCI6MTcxMjIyNDAyOSwiZXhwIjoxNzEyMjI0MDM5fQ.TPN58EpSIxrNc6CFxYz3nv1ABg7mq13CtJwyjEmeMwxZ3qOpeEnwySK4B5-rkX3RkxjAI3Y9-gaP6q4xjt-ODA"
+        hash:
+          type: string
+          example: "1628b8f86c4573abc6779cf43ee0bde4ea74b56644874f7143a9d7dcc0d24b05"
+        from:
+          type: string
+          example: "0xdB31cd7ca3C05993D3A2d94b1F156ef95db4AE3D"
+        to:
+          type: string
+          example: "0x2f5de1341833fa9a83ee5109c64f7dda4da70125"
+        gasLimit:
+          type: string
+          example: "0x5208"
+        gasPrice:
+          type: string
+          example: "0x4a817c800"
+        value:
+          type: string
+          example: "0x2386f26fc10000"
+        data:
+          type: string
+          example: null
+        nonce:
+          type: string
+          example: "0x1"
+        network:
+          type: string
+          example: "klaytn"
+          description: 네트워크 이름
+
+    PostSignRequestBody:
+      required:
+        - to
+        - from
+        - sigantureJson
+        - hashHex
+        - network
+        - uid
+        - wid
+        - sid
+        - type
+      type: object
+      properties:
+        to:
+          type: string
+          example: "0x2f5de1341833fa9a83ee5109c64f7dda4da70125"
+          description: target EOA or CA
+        from:
+          type: string
+          example: "0xE27026454dFC09f2e1C901DC8a27a6a38909f078"
+        signatureJson:
+          type: string
+          example: '{"r":"0x1","s":"0x2","v":"0x3"}'
+          description: signature json
+        hashHex:
+          type: string
+          example: "0x1234567890abcdef"
+          description: hash hex
+        network:
+          type: string
+          example: "ethereum"
+          description: 네트워크 이름
+        uid:
+          type: string
+          example: "d5b440b8-469b-4e16-8978-d78b73a09c4e"
+          description: 지갑 생성 시 반환된 uid
+        wid:
+          type: string
+          example: "wONT9/oYetQAytC/KdF9Jw=="
+          description: 사용자 지갑 id
+        sid:
+          type: string
+          example: "0xbE616d5b24903efc58149f3c7511FeC2085c176e"
+          description: 사용자 지갑 주소
+        type:
+          type: string
+          example: "EIP1559"
+          description: "[LEGACY, EIP1559] 중 택 1"
+          enum:
+            - EIP1559
+            - LEGACY
+        value:
+          type: string
+          description: 16진수 wei
+          example: "0x0"
+        data:
+          type: string
+          description: Contract function call data
+        gasPrice:
+          type: string
+        gasLimit:
+          type: string
+        maxPriorityFeePerGas:
+          type: string
+          description: EIP-1559 type만 지원
+        maxFeePerGas:
+          type: string
+          description: EIP-1559 type만 지원
+        message:
+          type: string
+          example: "0x1234567890abcdef"
+          description: message
+
+    EIP1559CallRequestBody:
+      required:
+        - network
+        - to
+
+      type: object
+      properties:
+        network:
+          type: string
+          example: "ethereum"
+          description: 네트워크 이름
+        to:
+          type: string
+          example: "0x2f5de1341833fa9a83ee5109c64f7dda4da70125"
+          description: target address
+        from:
+          type: string
+        gasLimit:
+          type: string
+          description: 최대 가스
+        value:
+          type: string
+        data:
+          type: string
+          description: call data
+        nonce:
+          type: string
+        maxPriorityFeePerGas:
+          type: string
+        maxFeePerGas:
+          type: string
 
   securitySchemes:
     SecureChannel:
