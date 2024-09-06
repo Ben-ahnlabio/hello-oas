@@ -21,6 +21,7 @@ info:
       - javascript 에는 entry point 가 없음
       - python 에는 암호화 예제 함수가 없음
       - python indent 안맞음
+      - golang, java 도 있었으면 좋겠다
     ```
 
   termsOfService: https://api.id.myabcwallet.com/query/v2/terms?service=waas-admin&language=ko
@@ -1402,9 +1403,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
 
       responses:
@@ -1508,9 +1507,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
 
       responses:
@@ -1543,9 +1540,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
 
       responses:
@@ -1699,9 +1694,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
         - name: tokenId
           in: query
@@ -1742,9 +1735,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
         - name: ca
           in: query
@@ -1779,9 +1770,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
         - name: ca
           in: query
@@ -1853,9 +1842,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
         - name: ca
           in: query
@@ -1896,9 +1883,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
         - name: ca
           in: query
@@ -1939,9 +1924,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: ca
@@ -1992,9 +1975,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: approved
@@ -2037,9 +2018,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: operator
@@ -2082,9 +2061,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: from
@@ -2143,9 +2120,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: to
@@ -2200,9 +2175,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: ca
@@ -2265,9 +2238,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: spender
@@ -2314,9 +2285,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: ca
@@ -2405,9 +2374,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: blockNumber
@@ -2527,9 +2494,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: hash
@@ -2612,9 +2577,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: address
@@ -2662,9 +2625,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-            enum:
-              - klaytn
+            $ref: "#/components/schemas/SupportedNetworks"
           description: 네트워크 이름
           example: "klaytn"
         - name: hash
@@ -2732,6 +2693,994 @@ paths:
                     type: string
                     nullable: true
                     example: null
+
+  /wapi/v2/btc/address/validate:
+    get:
+      tags:
+        - BTC
+      operationId: btcValidateAddress
+      security:
+        - BearerAuth: []
+      summary: Address 검증
+      description: |-
+
+        입력값 address가 올바른 Bitcoin Address 유효성을 검증합니다.
+
+        ```
+        - 입력값이 address 가 아닌 경우에 대한 response
+        ```
+
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 검증할 지갑 Address
+          example: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - bitcoin
+              - bitcoin_testnet
+          description: 네트워크 이름
+          example: "bitcoin"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    example: "tb1qanfh6n9csne5swjer6wmd2djugcy5y6e2d4rpd"
+                  isvalid:
+                    type: boolean
+                    example: true
+
+  /wapi/v2/btc/address:
+    get:
+      tags:
+        - BTC
+      operationId: btcGetNewAddress
+      security:
+        - BearerAuth: []
+      summary: Address 주소 조회
+      description: |-
+
+        입력값 pubkey로부터 Bitcoin Address(NativeSegwit)를 구합니다. 사용자 public key 조회는 [사용자 지갑 정보 조회](https://docs.waas.myabcwallet.com/ko/api/mpc/rest-api/mpc/)를 참고합니다.
+
+      parameters:
+        - name: pubkey
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 사용자 public key
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - bitcoin
+              - bitcoin_testnet
+          description: 네트워크 이름
+          example: "bitcoin"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    example: "tb1qanfh6n9csne5swjer6wmd2djugcy5y6e2d4rpd"
+
+  /wapi/v2/btc/transaction/hash:
+    get:
+      tags:
+        - BTC
+      operationId: btcGetTransactionByHash
+      security:
+        - BearerAuth: []
+      summary: Transaction Hash 조회
+      description: |-
+
+        Transaction hash를 사용하여 정보를 조회합니다.
+
+        ```
+        - response 없음
+        ```
+
+      parameters:
+        - name: txHash
+          in: query
+          required: true
+          schema:
+            type: string
+          description: "/wapi/v2/btc/transaction/finalize 호출 응답으로 받은 tx_hash"
+          example: "0x2b28df4fa5ffe35c39c97267282b3a42beaac5feb49e9e92e48fb97e91510ce2"
+        - name: network
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - bitcoin
+              - bitcoin_testnet
+          description: 네트워크 이름
+          example: "bitcoin"
+
+      responses:
+        "200":
+          description: 성공
+
+  /wapi/v2/btc/current/fee:
+    post:
+      tags:
+        - BTC
+      operationId: btcGetCurrentFee
+      security:
+        - BearerAuth: []
+      summary: Fee Rate 조회
+      description: |-
+
+        bitcoin rpc 를 이용해서 fee_rate 값을 구합니다. blocks 값은 optional 이며, 기본값은 10 입니다.
+
+        ```
+        - 기본값 설명 수정 필요
+        ```
+
+      requestBody:
+        description: Fee Rate 조회 요청 정보
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                network:
+                  type: string
+                  enum:
+                    - bitcoin
+                    - bitcoin_testnet
+                blocks:
+                  type: integer
+                  example: 10
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fee_rate:
+                    type: string
+                    example: "4"
+
+  /wapi/v2/btc/transaction/generate:
+    post:
+      tags:
+        - BTC
+      operationId: btcGenerateTransaction
+      security:
+        - BearerAuth: []
+      summary: Transaction 생성
+      description: |-
+
+        transaction 을 생성합니다. Sign 이 필요한 hash list 를 반환합니다.
+
+        반환된 hash list에 모두 서명하여 finalize API에 사용합니다. list의 순서는 유지되어야 합니다.
+
+        `amount` 는 보낼 금액(satoshi) 입니다. 
+
+        `feeRate` 는 `/btc/current/fee` 에서 받은 값을 그대로 사용합니다. 
+
+        `to` 는 받는 bitcoin 주소입니다. 
+
+        이 값에 따라서 'bitcoin_testnet' 또는 'bitcoin' 이 결정 됩니다. 
+
+        error 객체 값을 확인하세요. 성공하면 error 값은 null 입니다.
+
+      requestBody:
+        description: Transaction 생성 요청 정보
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BtcTransactionGenerateRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount:
+                    type: string
+                    example: "1000"
+                  from:
+                    type: string
+                    example: "tb1qanfh6n9csne5swjer6wmd2djugcy5y6e2d4rpd"
+                  to:
+                    type: string
+                    example: "tb1qanfh6n9csne5swjer6wmd2djugcy5y6e2d4rpd"
+                  fee_rate:
+                    type: string
+                    example: "4"
+                  gas_fee:
+                    type: string
+                    example: "282"
+                  hashes:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      [
+                        "ae2db75b9d7bfb9bc3c39e238e1479df3021b206039f67528024ab123990feb4",
+                      ]
+                  public_key_hex:
+                    type: string
+                    example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+                  error:
+                    $ref: "#/components/schemas/CommonErrorObject"
+
+  /wapi/v2/btc/transaction/finalize:
+    post:
+      tags:
+        - BTC
+      operationId: btcFinalizeTransaction
+      security:
+        - BearerAuth: []
+      summary: Transaction 전송
+      description: |-
+
+        transaction 을 완성하고 입력받은 rpc_url 로 전송합니다. 
+
+        `amount` `fee_rate` `pubkey` `to` 값은 `/btc/transaction/generate` 에 보낸 값을 그대로 사용해야 합니다. 
+
+        `signatureHex` 는 `/btc/transaction/generate` 으로 생성한 hash 값을 sign 한 signature 값입니다. 
+
+        signautre 값은 r, s 값을 가운데 '0x' 를 제외하고 연결한 값입니다.
+
+        Signature 
+
+        {"signstr":"{\"sig_num\":1,\"sig_list\":[{\"r\":\"0xabfd8f012ef251dcacc900257217aeb388be48e0a3dd45cadaf6b57dd4994ab0\",\"s\":\"0x7e9fc9168a29723c9ba0388970aa43b88f601a8ae7f7d39cefe112800ab102c9\",\"der\":\"\",\"vsource\":0}]}","iserr":false,"errmsg":""}
+
+        signatureHex: r + ( 0x를 제거한 s )
+
+        0xabfd8f012ef251dcacc900257217aeb388be48e0a3dd45cadaf6b57dd4994ab07e9fc9168a29723c9ba0388970aa43b88f601a8ae7f7d39cefe112800ab102c9
+
+
+        ```
+        - response body header 설명 없음
+        - 요청 예시 없음
+        ```
+
+      requestBody:
+        description: Transaction 전송 요청
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BtcFinalizeTransactionRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tx_hash:
+                    type: string
+                    example: "c0171226f320d7d5602acea60afd2cf985a0a3d1e0fc91d767e9347a5b9bd76f"
+                  error:
+                    $ref: "#/components/schemas/CommonErrorObject"
+
+  /wapi/v2/aptos/nft/offer/pre:
+    post:
+      tags:
+        - Aptos
+      operationId: aptosNftOfferPre
+      security:
+        - BearerAuth: []
+      summary: NFT-Offer Pre
+      description: |-
+
+        NFT 전송
+
+        ```
+        - 요청 예시에는 `sender` reqeust body 에는 account 로 되어있음
+        ```
+
+      requestBody:
+        description: NFT-Offer Pre 요청
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AptosNftOfferPreRequestBody"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mpcToken:
+                    type: string
+                    example: "eyJraWQiOiJtcGMiLCJhbGciOiJFZERTQSJ9.eyJ1aWQiOiI5NWU4OGRiYy02NTNmLTQ3ZWEtYjUwZC1jZmNlOWJhYmYwOTIiLCJ0aW1lc3RhbXAiOjE3MTMxNDM1NjYwMDYsIm9wIjoiZ2VuIiwiZGF0YSI6eyJkc2EiOiJlY2RzYSIsImN1cnZlIjoic2VjcDI1NmsxIn0sImlhdCI6MTcxMzE0MzU2NiwiZXhwIjoxNzEzMTQzNTc2fQ.N6JwQkX9jHSloOTVrpiyPIjrCswHBhagWljsC-yXc8auqREg6imxgELPTevDiRbL56CRcpU4gv8Ag7l8971ABg"
+                  hash:
+                    type: string
+                    example: "31d4f331890542d6a03395014c358c4d14ce7ac4dd1015e4d834af64165b6d89"
+
+  /wapi/v2/aptos/nft/offer/simulate:
+    post:
+      tags:
+        - Aptos
+      operationId: aptosNftOfferSimulate
+      security:
+        - BearerAuth: []
+      summary: NFT-Offer Simulate
+      description: |-
+
+        NFT 전송 simulate
+
+        ```
+        - 설명 필요. simulate 가 무엇인지 언제 쓰는지?
+        - response 가 사용자 관점에서 유용한지 고민해야함. 설명 필요
+        ```
+
+      requestBody:
+        description: NFT-Offer Simulate 요청
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AptosNftOfferPreRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gas_used:
+                    type: string
+                    example: "0"
+                  gas_unit_price:
+                    type: string
+                    example: "100"
+                  version:
+                    type: integer
+                    example: 553372847
+                  max_gas_amount:
+                    type: string
+                    example: "100477"
+                  transaction:
+                    type: object
+                    properties:
+                      UserTransaction:
+                        type: object
+                        properties:
+                          raw_txn:
+                            type: object
+                            properties:
+                              sequence_number:
+                                type: integer
+                                example: 1
+                              chain_id:
+                                type: integer
+                                example: 1
+                              sender:
+                                type: string
+                                example: "d8a04d891d3906294e1b90b898d8b7b7ef5beb0f6f614653edb762bf32892f84"
+                              payload:
+                                type: object
+                                properties:
+                                  EntryFunction:
+                                    type: object
+                                    properties:
+                                      args:
+                                        type: array
+                                        items:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        example:
+                                          - [
+                                              28,
+                                              37,
+                                              128,
+                                              1,
+                                              143,
+                                              223,
+                                              240,
+                                              118,
+                                              50,
+                                              231,
+                                              4,
+                                              148,
+                                              131,
+                                              194,
+                                              16,
+                                              181,
+                                              180,
+                                              218,
+                                              92,
+                                              84,
+                                              150,
+                                              39,
+                                              233,
+                                              87,
+                                              14,
+                                              226,
+                                              244,
+                                              210,
+                                              13,
+                                              235,
+                                              6,
+                                              26,
+                                            ]
+                                          - [
+                                              197,
+                                              90,
+                                              117,
+                                              170,
+                                              235,
+                                              231,
+                                              217,
+                                              16,
+                                              239,
+                                              172,
+                                              196,
+                                              172,
+                                              111,
+                                              65,
+                                              185,
+                                              156,
+                                              70,
+                                              78,
+                                              80,
+                                              217,
+                                              79,
+                                              191,
+                                              17,
+                                              181,
+                                              119,
+                                              42,
+                                              158,
+                                              200,
+                                              127,
+                                              46,
+                                              178,
+                                              52,
+                                            ]
+                                          - [
+                                              11,
+                                              83,
+                                              109,
+                                              111,
+                                              107,
+                                              101,
+                                              100,
+                                              32,
+                                              66,
+                                              117,
+                                              110,
+                                              115,
+                                            ]
+                                          - [
+                                              9,
+                                              66,
+                                              117,
+                                              110,
+                                              32,
+                                              32,
+                                              35,
+                                              55,
+                                              54,
+                                              51,
+                                            ]
+                                          - [0, 0, 0, 0, 0, 0, 0, 0]
+                                          - [1, 0, 0, 0, 0, 0, 0, 0]
+                                      ty_args:
+                                        type: array
+                                        items:
+                                          type: string
+                                        example: []
+                                      module:
+                                        type: object
+                                        properties:
+                                          address:
+                                            type: string
+                                            example: "0000000000000000000000000000000000000000000000000000000000000003"
+                                          name:
+                                            type: string
+                                            example: "token_transfers"
+                                      function:
+                                        type: string
+                                        example: "offer_script"
+                              gas_unit_price:
+                                type: integer
+                                example: 100
+                              max_gas_amount:
+                                type: integer
+                                example: 100477
+                              expiration_timestamp_secs:
+                                type: integer
+                                example: 1713155966
+                          authenticator:
+                            type: object
+                            properties:
+                              SingleSender:
+                                type: object
+                                properties:
+                                  sender:
+                                    type: object
+                                    properties:
+                                      SingleKey:
+                                        type: object
+                                        properties:
+                                          authenticator:
+                                            type: object
+                                            properties:
+                                              public_key:
+                                                type: object
+                                                properties:
+                                                  Secp256k1Ecdsa:
+                                                    type: object
+                                                    properties:
+                                                      public_key:
+                                                        type: string
+                                                        example: "0x045c5d89f60eba1b8fc5c2bd2fa28eefe48f4c950815acd7e404b48257433b951aa2f2d296da919e404c489943446dc025537b35c51b89cf442808239d0a0919ac"
+                                              signature:
+                                                type: object
+                                                properties:
+                                                  Secp256k1Ecdsa:
+                                                    type: object
+                                                    properties:
+                                                      signature:
+                                                        type: string
+                                                        example: "0x53963d7aca6cc5b5ea7d25e8d1d2a116ef502c890065b8d8d3ff38c1a1019ea620e30e7d401999f7861cca7a2f9c857dc82a7471583ba04303ced74526e05054"
+                  info:
+                    type: object
+                    properties:
+                      V0:
+                        type: object
+                        properties:
+                          state_cemetery_hash:
+                            type: string
+                            nullable: true
+                            example: null
+                          gas_used:
+                            type: integer
+                            example: 0
+                          event_root_hash:
+                            type: string
+                            example: "0000000000000000000000000000000000000000000000000000000000000000"
+                          state_checkpoint_hash:
+                            type: string
+                            nullable: true
+                            example: null
+                          state_change_hash:
+                            type: string
+                            example: "0000000000000000000000000000000000000000000000000000000000000000"
+                          transaction_hash:
+                            type: string
+                            example: "f0403514fcf3045de4fbdb30b4f8806530ea1df80656bd37ba20c6bb1f1c70a9"
+                          status:
+                            type: object
+                            properties:
+                              MiscellaneousError:
+                                type: integer
+                    example: 3
+
+  /wapi/v2/aptos/nft/offer:
+    post:
+      tags:
+        - Aptos
+      operationId: aptosNftOffer
+      security:
+        - BearerAuth: []
+      summary: NFT-Offer
+      description: |-
+
+        NFT 전송
+
+        ```
+        - 설명 부족
+        - desctipion 잘못됨
+        - 요청 예시 없음
+        ```
+
+      requestBody:
+        description: NFT-Offer 요청
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AptosNftOfferRequestBody"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                    example: "0x072ef6d9759bad8c4dfcf1825461d46ab0e9446f803548ff2c382cad889b050e"
+                  sender:
+                    type: string
+                    example: "0xd8a04d891d3906294e1b90b898d8b7b7ef5beb0f6f614653edb762bf32892f84"
+                  sequenceNumber:
+                    type: string
+                    nullable: true
+                    example: null
+                  maxGasAmount:
+                    type: string
+                    nullable: true
+                    example: null
+                  gasUnitPrice:
+                    type: string
+                    nullable: true
+                    example: null
+                  expirationTimestampSecs:
+                    type: string
+                    nullable: true
+                    example: null
+                  payload:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: "entry_function_payload"
+                      function:
+                        type: string
+                        example: "0x3::token_transfers::offer_script"
+                      typeArguments:
+                        type: string
+                        nullable: true
+                        example: null
+                      arguments:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - "0x1c2580018fdff07632e7049483c210b5b4da5c549627e9570ee2f4d20deb061a"
+                          - "0xc55a75aaebe7d910efacc4ac6f41b99c464e50d94fbf11b5772a9ec87f2eb234"
+                          - "Smoked Buns"
+                          - "Bun  #763"
+                          - "0"
+                          - "1"
+                  signature:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: "single_sender"
+                      publicKey:
+                        type: string
+                        nullable: true
+                        example: null
+                      signature:
+                        type: string
+                        example: "0xca94363e5284208a0f978e062503e95be2cf9a03bdf9e668f1a8ec0a90a58fd15d0d6732ba41d2d8ba2828fd69bb93c538c74cb61587f2a6ce755a567ff78ff8"
+
+  /wapi/v2/aptos/nft/offer/claim/pre:
+    post:
+      tags:
+        - Aptos
+      operationId: aptosNftOfferClaimPre
+      security:
+        - BearerAuth: []
+      summary: NFT-Offer Claim Pre
+      description: |-
+
+        NFT 수락
+
+        ```
+        - 설명 부족
+        ```
+
+      requestBody:
+        description: NFT-Offer Claim Pre 요청
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AptosNftOfferClaimPreRequestBody"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mpcToken:
+                    type: string
+                    example: "eyJraWQiOiJtcGMiLCJhbGciOiJFZERTQSJ9.eyJ1aWQiOiI5NWU4OGRiYy02NTNmLTQ3ZWEtYjUwZC1jZmNlOWJhYmYwOTIiLCJ0aW1lc3RhbXAiOjE3MTMxNDM1NjYwMDYsIm9wIjoiZ2VuIiwiZGF0YSI6eyJkc2EiOiJlY2RzYSIsImN1cnZlIjoic2VjcDI1NmsxIn0sImlhdCI6MTcxMzE0MzU2NiwiZXhwIjoxNzEzMTQzNTc2fQ.N6JwQkX9jHSloOTVrpiyPIjrCswHBhagWljsC-yXc8auqREg6imxgELPTevDiRbL56CRcpU4gv8Ag7l8971ABg"
+                  hash:
+                    type: string
+                    example: "31d4f331890542d6a03395014c358c4d14ce7ac4dd1015e4d834af64165b6d89"
+
+  /wapi/v2/aptos/nft/offer/claim/simulate:
+    post:
+      tags:
+        - Aptos
+      operationId: aptosNftOfferClaimSimulate
+      security:
+        - BearerAuth: []
+      summary: NFT-Claim Simulate
+      description: |-
+
+        NFT 수락
+
+        ```
+        - 설명 틀림, 부족
+        ```
+
+      requestBody:
+        description: NFT-Offer Claim Simulate 요청
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AptosNftOfferClaimSimulrateRequestBody"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gas_used:
+                    type: string
+                    example: "0"
+                  gas_unit_price:
+                    type: string
+                    example: "100"
+                  version:
+                    type: integer
+                    example: 553372847
+                  max_gas_amount:
+                    type: string
+                    example: "100477"
+                  transaction:
+                    type: object
+                    properties:
+                      UserTransaction:
+                        type: object
+                        properties:
+                          raw_txn:
+                            type: object
+                            properties:
+                              sequence_number:
+                                type: integer
+                                example: 1
+                              chain_id:
+                                type: integer
+                                example: 1
+                              sender:
+                                type: string
+                                example: "d8a04d891d3906294e1b90b898d8b7b7ef5beb0f6f614653edb762bf32892f84"
+                              payload:
+                                type: object
+                                properties:
+                                  EntryFunction:
+                                    type: object
+                                    properties:
+                                      args:
+                                        type: array
+                                        items:
+                                          type: array
+                                          items:
+                                            type: integer
+                                        example:
+                                          - [
+                                              28,
+                                              37,
+                                              128,
+                                              1,
+                                              143,
+                                              223,
+                                              240,
+                                              118,
+                                              50,
+                                              231,
+                                              4,
+                                              148,
+                                              131,
+                                              194,
+                                              16,
+                                              181,
+                                              180,
+                                              218,
+                                              92,
+                                              84,
+                                              150,
+                                              39,
+                                              233,
+                                              87,
+                                              14,
+                                              226,
+                                              244,
+                                              210,
+                                              13,
+                                              235,
+                                              6,
+                                              26,
+                                            ]
+                                          - [
+                                              197,
+                                              90,
+                                              117,
+                                              170,
+                                              235,
+                                              231,
+                                              217,
+                                              16,
+                                              239,
+                                              172,
+                                              196,
+                                              172,
+                                              111,
+                                              65,
+                                              185,
+                                              156,
+                                              70,
+                                              78,
+                                              80,
+                                              217,
+                                              79,
+                                              191,
+                                              17,
+                                              181,
+                                              119,
+                                              42,
+                                              158,
+                                              200,
+                                              127,
+                                              46,
+                                              178,
+                                              52,
+                                            ]
+                                          - [
+                                              11,
+                                              83,
+                                              109,
+                                              111,
+                                              107,
+                                              101,
+                                              100,
+                                              32,
+                                              66,
+                                              117,
+                                              110,
+                                              115,
+                                            ]
+                                          - [
+                                              9,
+                                              66,
+                                              117,
+                                              110,
+                                              32,
+                                              32,
+                                              35,
+                                              55,
+                                              54,
+                                              51,
+                                            ]
+                                          - [0, 0, 0, 0, 0, 0, 0, 0]
+                                          - [1, 0, 0, 0, 0, 0, 0, 0]
+                                      ty_args:
+                                        type: array
+                                        items:
+                                          type: string
+                                        example: []
+                                      module:
+                                        type: object
+                                        properties:
+                                          address:
+                                            type: string
+                                            example: "0000000000000000000000000000000000000000000000000000000000000003"
+                                          name:
+                                            type: string
+                                            example: "token_transfers"
+                                      function:
+                                        type: string
+                                        example: "offer_script"
+                              gas_unit_price:
+                                type: integer
+                                example: 100
+                              max_gas_amount:
+                                type: integer
+                                example: 100477
+                              expiration_timestamp_secs:
+                                type: integer
+                                example: 1713155966
+                          authenticator:
+                            type: object
+                            properties:
+                              SingleSender:
+                                type: object
+                                properties:
+                                  sender:
+                                    type: object
+                                    properties:
+                                      SingleKey:
+                                        type: object
+                                        properties:
+                                          authenticator:
+                                            type: object
+                                            properties:
+                                              public_key:
+                                                type: object
+                                                properties:
+                                                  Secp256k1Ecdsa:
+                                                    type: object
+                                                    properties:
+                                                      public_key:
+                                                        type: string
+                                                        example: "0x045c5d89f60eba1b8fc5c2bd2fa28eefe48f4c950815acd7e404b48257433b951aa2f2d296da919e404c489943446dc025537b35c51b89cf442808239d0a0919ac"
+                                              signature:
+                                                type: object
+                                                properties:
+                                                  Secp256k1Ecdsa:
+                                                    type: object
+                                                    properties:
+                                                      signature:
+                                                        type: string
+                                                        example: "0x53963d7aca6cc5b5ea7d25e8d1d2a116ef502c890065b8d8d3ff38c1a1019ea620e30e7d401999f7861cca7a2f9c857dc82a7471583ba04303ced74526e05054"
+                  info:
+                    type: object
+                    properties:
+                      V0:
+                        type: object
+                        properties:
+                          state_cemetery_hash:
+                            type: string
+                            nullable: true
+                            example: null
+                          gas_used:
+                            type: integer
+                            example: 0
+                          event_root_hash:
+                            type: string
+                            example: "0000000000000000000000000000000000000000000000000000000000000000"
+                          state_checkpoint_hash:
+                            type: string
+                            nullable: true
+                            example: null
+                          state_change_hash:
+                            type: string
+                            example: "0000000000000000000000000000000000000000000000000000000000000000"
+                          transaction_hash:
+                            type: string
+                            example: "f0403514fcf3045de4fbdb30b4f8806530ea1df80656bd37ba20c6bb1f1c70a9"
+                          status:
+                            type: object
+                            properties:
+                              MiscellaneousError:
+                                type: integer
+                    example: 3
 
 components:
   schemas:
@@ -3533,9 +4482,7 @@ components:
       type: object
       properties:
         network:
-          type: string
-          example: "ethereum"
-          description: 네트워크 이름
+          $ref: "#/components/schemas/SupportedNetworks"
         to:
           type: string
           example: "0x2f5de1341833fa9a83ee5109c64f7dda4da70125"
@@ -3565,13 +4512,381 @@ components:
       type: object
       properties:
         network:
-          type: string
-          example: "klaytn"
-          description: 네트워크 이름
+          $ref: "#/components/schemas/SupportedNetworks"
         rawtx:
           type: string
           example: "0xad6911cd120e5a2f2cd3529d0293d444bd7db09917df2821ba8fc31e079260245b69f89bf381989bdb1e520002fc5b94a24d969b74a08ce9ea860f46939daa011b"
           description: 직렬화된 Sign 트랜잭션 문자열
+
+    SupportedNetworks:
+      type: string
+      enum:
+        - ethereum
+        - ethereum_sepolia
+        - avalanche
+        - klaytn
+        - klaytn_baobab
+        - polygon
+        - polygon_amoy
+        - arbitrum
+        - arbitrum_sepolia
+        - astar_zkevm
+        - astar_zkevm_zkyoto
+        - fncy
+        - binance
+        - binance_testnet
+        - wemix
+        - wemix_testnet
+        - taiko
+        - taiko_hekla
+        - mantle
+        - mantle_testnet
+        - giant_mammoth
+        - giant_mammoth_testnet
+        - xlayer
+        - xlayer_testnet
+        - bitcoin
+        - bitcoin_testnet
+        - oasys
+        - oasys_testnet
+        - aptos
+        - aptos_testnet
+
+    BtcTransactionGenerateRequestBody:
+      required:
+        - feeRate
+        - amount
+        - pubkey
+        - to
+
+      type: object
+      properties:
+        feeRate:
+          type: string
+          example: "4"
+          description: "fee rate 조회 API에서 반환된 fee_rate 값"
+        amount:
+          type: string
+          example: "0.0001"
+          description: "전송할 금액(satoshi)"
+        pubkey:
+          type: string
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+          description: "사용자 지갑 publickey"
+        to:
+          type: string
+          example: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+          description: "수신 지갑 주소"
+
+    BtcFinalizeTransactionRequestBody:
+      required:
+        - network
+        - to
+        - feeRate
+        - amount
+        - pubkey
+        - signatureHex
+
+      type: object
+      properties:
+        network:
+          type: string
+          example: "bitcoin"
+          description: network
+          enum:
+            - bitcoin
+            - bitcoin_testnet
+        to:
+          type: string
+          example: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+          description: 수신 지갑 주소
+        feeRate:
+          type: string
+          example: "4"
+          description: "fee rate 조회 API에서 반환된 fee_rate 값"
+        amount:
+          type: string
+          example: "0.0001"
+          description: "전송할 금액(satoshi)"
+        pubkey:
+          type: string
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+          description: "사용자 지갑 publickey"
+        signatureHex:
+          type: string
+          example: "3045022100c4"
+          description: "btc/transaction/generate 에서 반환된 hashes 리스트에 서명한 signature로써 순서가 유지되어야 합니다."
+
+    AptosNftOfferPreRequestBody:
+      required:
+        - account
+        - receiver
+        - creator
+        - collectionName
+        - name
+        - amount
+        - network
+
+      type: object
+      properties:
+        account:
+          type: string
+          example: "0xb9b3120821c28e4265398a208cb70d46ab6e397e579a3dccb7da37f394c12302"
+          description: "자신의 aptos address"
+        receiver:
+          type: string
+          example: "0x2e7ddbd83981345a96acb979855bde73b9e7720deb896706aed00c260c8ca0e9"
+          description: "to"
+        creator:
+          type: string
+          example: "0x1234567890abcdef"
+        collectionName:
+          type: string
+          example: "collectionName"
+        name:
+          type: string
+          example: "name"
+        amount:
+          type: string
+          example: "0x1"
+          description: "value"
+        network:
+          type: string
+          example: "aptos_testnet"
+          description: "네트워크 이름"
+          enum:
+            - aptos
+            - aptos_testnet
+        propertyVersion:
+          type: string
+          example: "1"
+        sequenceNumber:
+          type: string
+          example: "0x0"
+          description: "nonce"
+        maxGasAmount:
+          type: string
+          example: "1000000"
+          description: "최대 가스비"
+        gasUnitPrice:
+          type: string
+          example: "1000000000"
+          description: "gasPrice"
+        expirationTimestampSecs:
+          type: string
+          example: "1713028584"
+          description: "유효 시간 (Unix timestamp)"
+
+    AptosNftOfferRequestBody:
+      required:
+        - account
+        - receiver
+        - creator
+        - collectionName
+        - name
+        - amount
+        - network
+        - pubkey
+        - signatureJson
+
+      type: object
+      properties:
+        account:
+          type: string
+          example: "0xb9b3120821c28e4265398a208cb70d46ab6e397e579a3dccb7da37f394c12302"
+          description: "자신의 aptos address"
+        receiver:
+          type: string
+          example: "0x2e7ddbd83981345a96acb979855bde73b9e7720deb896706aed00c260c8ca0e9"
+          description: "to"
+        creator:
+          type: string
+          example: "0x1234567890abcdef"
+        collectionName:
+          type: string
+          example: "collectionName"
+        name:
+          type: string
+          example: "name"
+        amount:
+          type: string
+          example: "0x1"
+          description: "value"
+        network:
+          type: string
+          example: "aptos_testnet"
+          description: "네트워크 이름"
+          enum:
+            - aptos
+            - aptos_testnet
+        pubkey:
+          type: string
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+          description: "Address 생성에 사용한 pubkey"
+        signatureJson:
+          type: string
+          description: "mpc sign에서 반환된 signature json"
+        propertyVersion:
+          type: string
+          example: "1"
+        sequenceNumber:
+          type: string
+          example: "0x0"
+          description: "nonce"
+        maxGasAmount:
+          type: string
+          example: "1000000"
+          description: "최대 가스비"
+        gasUnitPrice:
+          type: string
+          example: "1000000000"
+          description: "gasPrice"
+        expirationTimestampSecs:
+          type: string
+          example: "1713028584"
+          description: "유효 시간 (Unix timestamp)"
+
+    AptosNftOfferClaimPreRequestBody:
+      required:
+        - account
+        - sender
+        - creator
+        - collectionName
+        - name
+        - network
+
+      type: object
+      properties:
+        account:
+          type: string
+          example: "0xb9b3120821c28e4265398a208cb70d46ab6e397e579a3dccb7da37f394c12302"
+          description: "자신의 aptos address"
+        sender:
+          type: string
+          example: "0x2e7ddbd83981345a96acb979855bde73b9e7720deb896706aed00c260c8ca0e9"
+          description: "from"
+        creator:
+          type: string
+          example: "0x1234567890abcdef"
+        collectionName:
+          type: string
+          example: "collectionName"
+        name:
+          type: string
+          example: "name"
+        network:
+          type: string
+          example: "aptos_testnet"
+          description: "네트워크 이름"
+          enum:
+            - aptos
+            - aptos_testnet
+        pubkey:
+          type: string
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+          description: "Address 생성에 사용한 pubkey"
+        signatureJson:
+          type: string
+          description: "mpc sign에서 반환된 signature json"
+        propertyVersion:
+          type: string
+          example: "1"
+        sequenceNumber:
+          type: string
+          example: "0x0"
+          description: "nonce"
+        maxGasAmount:
+          type: string
+          example: "1000000"
+          description: "최대 가스비"
+        gasUnitPrice:
+          type: string
+          example: "1000000000"
+          description: "gasPrice"
+        expirationTimestampSecs:
+          type: string
+          example: "1713028584"
+          description: "유효 시간 (Unix timestamp)"
+
+    AptosNftOfferClaimSimulrateRequestBody:
+      required:
+        - account
+        - sender
+        - creator
+        - collectionName
+        - name
+        - network
+        - pubkey
+        - signatureJson
+
+      type: object
+      properties:
+        account:
+          type: string
+          example: "0xb9b3120821c28e4265398a208cb70d46ab6e397e579a3dccb7da37f394c12302"
+          description: "자신의 aptos address"
+        sender:
+          type: string
+          example: "0x2e7ddbd83981345a96acb979855bde73b9e7720deb896706aed00c260c8ca0e9"
+          description: "from"
+        creator:
+          type: string
+          example: "0x1234567890abcdef"
+        collectionName:
+          type: string
+          example: "collectionName"
+        name:
+          type: string
+          example: "name"
+        network:
+          type: string
+          example: "aptos_testnet"
+          description: "네트워크 이름"
+          enum:
+            - aptos
+            - aptos_testnet
+        pubkey:
+          type: string
+          example: "0488864e149733b5887193fc207b8a4a3d519fd4b9d83f596e6b226095478fecfdc330dbbb73656d82885ac0f1ee944767023eb698f1d7789a56dae66d0946c309"
+          description: "Address 생성에 사용한 pubkey"
+        signatureJson:
+          type: string
+          description: "mpc sign에서 반환된 signature json"
+        propertyVersion:
+          type: string
+          example: "1"
+        sequenceNumber:
+          type: string
+          example: "0x0"
+          description: "nonce"
+        maxGasAmount:
+          type: string
+          example: "1000000"
+          description: "최대 가스비"
+        gasUnitPrice:
+          type: string
+          example: "1000000000"
+          description: "gasPrice"
+        expirationTimestampSecs:
+          type: string
+          example: "1713028584"
+          description: "유효 시간 (Unix timestamp)"
+
+    CommonErrorObject:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "1000"
+          enum:
+            - "1000"
+            - "1001"
+            - "1002"
+            - "1003"
+            - "1004"
+        message:
+          type: string
+          example: "success"
 
   securitySchemes:
     SecureChannel:
