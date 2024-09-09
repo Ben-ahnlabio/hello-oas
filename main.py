@@ -58,6 +58,7 @@ async def proxy(full_path: str, request: Request):
             method=request.method, url=url, headers=headers, data=body, params=params
         ) as resp:
             response_body = await resp.read()
+            log.info("Response: %s", response_body)
             return Response(
                 content=response_body,
                 status_code=resp.status,

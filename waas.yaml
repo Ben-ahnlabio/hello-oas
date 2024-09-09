@@ -22,6 +22,12 @@ info:
       - python 에는 암호화 예제 함수가 없음
       - python indent 안맞음
       - golang, java 도 있었으면 좋겠다
+    - API 관한 설명, request body, response body 의 field 에 대한 설명이 부족함
+    - 필수 field / parameter 는 상단에 비 필수 field / parameter 는 하단에 명시하는게 좋을 듯
+    - 고정된 값 / 선택지가 없는 값을 계속 보내야 할까?
+    - 발생할 수 있는 오류 상황에 대한 response code / error response 가 없음
+    - 입력에 따라 아예 다른 response 예측하기 어려움
+    - 문서의 errors https://docs.waas.myabcwallet.com/en/api/_errors/ 에 발생할 수 있는 오류 나열, 상황 설명 필요
     ```
 
   termsOfService: https://api.id.myabcwallet.com/query/v2/terms?service=waas-admin&language=ko
@@ -257,7 +263,6 @@ paths:
 
         ```
         - POST -> GET ?
-        - '서버에서 연동 시 생성된 토큰 발급 받는 방법' : 적절한 제목이 있을까요?
         - code 값 설명? 사용 예시 문서 필요
         ```
 
@@ -508,7 +513,7 @@ paths:
 
 
         ```
-        - email template 종류 사용안함
+        - email template 종류 사용하지 않는데 description 에 포함됨
         - `serviceid` 하나 뿐이라면 입력 불필요?
         ```
 
@@ -544,7 +549,6 @@ paths:
 
             ```
             - 코드가 틀린 경우 발생함. 
-            - 존재하지 않는 이메일인 경우 발생함.
             - 그런데 요청이 아예 잘못됐는지? 코드가 틀린경우와 구분되지 않음.
             - response 가 not found 로 출력됨
             ```
@@ -566,8 +570,8 @@ paths:
             not found
 
             ```
-            - 언제 발생하는지?
-            - URL 이 아예 틀린 것인지?
+            - 이메일이 틀린 경우 발생함
+            - 이메일이 틀린 것인지? URL 이 아예 틀린 것인지?
             ```
 
           content:
@@ -4412,6 +4416,70 @@ paths:
                   hash:
                     type: string
                     example: "614b36f15a6a5982a575d8a4d21e215edb7c38a14b5b19647210490932d9c694"
+
+  /wapi/v2/walletscan/tokens:
+    get:
+      tags:
+        - WalletScan
+      operationId: walletscanTokens
+      security:
+        - BearerAuth: []
+      summary: Get Tokens
+      description: |-
+
+        지갑에 등록된 토큰 리스트 조회
+
+        ```
+        - 가능한 네트워크?
+        - response 예시 없음
+        ```
+
+      parameters:
+        - name: walletAddress
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "0x01a17a77b1bad5686ff8e92344cf4dba68cb76d945402ba9158a99be5bf646ca"
+          description: "Wallet Address"
+        - name: networks
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - klaytn
+              - ethereum
+              - polygon
+          example: "aptos"
+          description: "network with delimiter ','"
+        - name: minimalInfo
+          in: query
+          required: false
+          schema:
+            type: boolean
+          example: true
+          description: "minimal info"
+
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                          example: "0x1c2580018fdff07632e7049483c210b5b4da5c549627e9570ee2f4d20deb061a"
+                        balance:
+                          type: string
+                          example: "100"
 
 components:
   schemas:
