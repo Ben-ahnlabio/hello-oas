@@ -1,5 +1,4 @@
-name: Deploy WaaS Docs to s3
-
+name: Github action link dumps test
 on:
   workflow_dispatch:
 
@@ -20,13 +19,16 @@ jobs:
 
       - name: dumps links
         run: |-
-          echo "on pull request number: ${{ github.event.number }}"
-          echo "links"
-          echo "${{ github.server_url }}/${{ github.repository }}/pulls/"
+          echo "on pull request number: ${{ github.event.number }}" 
+          echo "dump links" >> message.txt
 
       - name: on pull request
         if: github.event_name == 'pull_request'
         run: |-
-          echo "on pull request number: ${{ github.event.number }}"
-          echo "links"
-          echo "${{ github.server_url }}/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
+          echo "on pull request number: ${{ github.event.number }}" >> message.txt
+          echo "links" >> message.txt
+          echo "${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.pull_request.number }}" >> message.txt
+
+      - name: read message
+        run: |-
+          cat message.txt
