@@ -1,5 +1,4 @@
-name: Deploy WaaS Docs to s3
-
+name: Github action link dumps test
 on:
   workflow_dispatch:
 
