@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
   pull_request:
+    types: [opened, reopened]
 
   push:
     branches:
@@ -21,11 +22,11 @@ jobs:
         run: |-
           echo "on pull request number: ${{ github.event.number }}"
           echo "links"
-          echo "${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}"
+          echo "${{ github.server_url }}/${{ github.repository }}/pulls/"
 
       - name: on pull request
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'pull_request'
         run: |-
           echo "on pull request number: ${{ github.event.number }}"
           echo "links"
-          echo "${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}"
+          echo "${{ github.server_url }}/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
