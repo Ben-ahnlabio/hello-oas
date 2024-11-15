@@ -1,0 +1,31 @@
+name: Deploy WaaS Docs to s3
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+jobs:
+  github-action-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: dumps links
+        run: |-
+          echo "on pull request number: ${{ github.event.number }}"
+          echo "links"
+          echo "${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}"
+
+      - name: on pull request
+        if: github.event_name != 'pull_request'
+        run: |-
+          echo "on pull request number: ${{ github.event.number }}"
+          echo "links"
+          echo "${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}"
